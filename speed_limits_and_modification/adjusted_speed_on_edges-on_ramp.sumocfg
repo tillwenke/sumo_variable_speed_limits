@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2022-10-13 11:22:15 by Eclipse SUMO GUI Version 1.14.1
+-->
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="../../../intelligent%20transport/its-project/speed_limits_and_modification/different_speed_on_edges-on_ramp.net.xml"/>
+        <route-files value="../../../intelligent%20transport/its-project/speed_limits_and_modification/different_speed_on_edges-on_ramp.rou.xml"/>
+        <additional-files value="../../../intelligent%20transport/its-project/speed_limits_and_modification/additional-adjusted_speed_on_edges-on_ramp.xml" />
+    </input>
+
+</configuration>

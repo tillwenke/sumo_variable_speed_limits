@@ -1,0 +1,8 @@
+<additional>>
+    <inductionLoop id="loop_before_top" lane="E9_1" pos="50" period="1000" file="inductive_loop_output.xml"/>
+    <inductionLoop id="loop_before_bottom" lane="E9_0" pos="50" period="1000" file="inductive_loop_output.xml"/>
+    <inductionLoop id="loop_top" lane="E1_2" pos="50" period="1000" file="inductive_loop_output.xml"/>
+    <inductionLoop id="loop_mid" lane="E1_1" pos="50" period="1000" file="inductive_loop_output.xml"/>
+    <inductionLoop id="loop_bottom" lane="E1_0" pos="50" period="1000" file="inductive_loop_output.xml"/>    
+    <variableSpeedSign id="vss" lanes="E9_0 E9_1" file="vss-different_speed_on_edges-on_ramp.xml"></variableSpeedSign>
+</additional>
