@@ -12,7 +12,7 @@ else:
 #init sumo simulation
 sumoBinary = "/usr/bin/sumo-gui"
 delay = '0.1'
-sumoCmd = [sumoBinary, "-c", "different_speed_on_edges-on_ramp.sumocfg", "--step-length", delay, '--start'] #no need to specify path to sumocfg
+sumoCmd = [sumoBinary, "-c", "adjusted_speed_on_edges-on_ramp.sumocfg", "--step-length", delay, '--start'] #no need to specify path to sumocfg
 
 #run sumo simulation
 traci.start(sumoCmd)
