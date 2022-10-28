@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2022-10-21 11:56:06 by Eclipse SUMO netedit Version 1.14.1
+<!-- generated on 2022-10-28 15:11:06 by Eclipse SUMO netedit Version 1.14.1
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <sumo-net-file value="/home/till/projects/uni/intelligent%20transport/its-project/junction_types/2_1_merge/2_1_merge.net.xml"/>
+        <sumo-net-file value="/home/till/projects/uni/intelligent%20transport/its-project/highway_junctions/2_1_merge/2_1_merge.net.xml"/>
     </input>
 
     <output>
-        <output-file value="/home/till/projects/uni/intelligent%20transport/its-project/junction_types/2_1_merge/2_1_merge.net.xml"/>
+        <output-file value="/home/till/projects/uni/intelligent%20transport/its-project/highway_junctions/2_1_merge/2_1_merge.net.xml"/>
     </output>
 
     <processing>
@@ -28,6 +28,10 @@
     <pedestrian>
         <walkingareas value="false"/>
     </pedestrian>
+
+    <netedit>
+        <route-files value="/home/till/projects/uni/intelligent%20transport/its-project/highway_junctions/2_1_merge/2_1_merge.rou.xml"/>
+    </netedit>
 
 </configuration>
 -->
