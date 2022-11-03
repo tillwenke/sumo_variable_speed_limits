@@ -1,10 +1,12 @@
 <additional>    
     <inductionLoop id="point_loop_seg_0_after_0" lane="seg_0_after_0" pos="50" period="1" file="inductive_loop_metrics.xml"/>
-    <inductionLoop id="segment_loop_seg_0_after_0" lane="seg_0_after_0" pos="50" period="1" length='50' file="inductive_loop_metrics.xml"/>
+    <laneAreaDetector id="segment_detector_seg_0_after_0" lane="seg_0_after_0" pos="50" endpos="100" length="50" period="1" file="inductive_loop_metrics.xml"/>
     
-    <inductionLoop id="point_loop_seg_0_before_1" lane="seg_0_before_1" pos="100" period="1" file="inductive_loop_metrics.xml"/>
+    <inductionLoop id="point_loop_seg_0_before_1" lane="seg_0_before_1" pos="-1" period="1" file="inductive_loop_metrics.xml"/>
     <inductionLoop id="segment_loop_seg_0_before_1" lane="seg_0_before_1" pos="50" period="1" length='50' file="inductive_loop_metrics.xml"/>
 
-    <inductionLoop id="point_loop_seg_0_before_0" lane="seg_0_before_0" pos="100" period="1" file="inductive_loop_metrics.xml"/>
+    <inductionLoop id="point_loop_seg_0_before_0" lane="seg_0_before_0" pos="-1" period="1"  file="inductive_loop_metrics.xml"/>
     <inductionLoop id="segment_loop_seg_0_before_0" lane="seg_0_before_0" pos="50" period="1" length='50' file="inductive_loop_metrics.xml"/>
+
+    
 </additional>
