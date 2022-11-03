@@ -163,8 +163,8 @@ while traci.simulation.getMinExpectedNumber() > 0:
         mean_speed = mean_speed_on_sum_b / aggregation_time
         print('speed', round(mean_speed,2), 'm/s')
 
-        print('OCC', round(occupancy_sum / aggregation_time, 2))
         occupancy = occupancy_sum / aggregation_time
+        print('OCC', round(occupancy, 2))
         occ.append(occupancy)
         flw.append(flow)
         sp = traci.lane.getMaxSpeed(seg_0_before_top)
@@ -179,14 +179,16 @@ while traci.simulation.getMinExpectedNumber() > 0:
         print('NUM', round(num_sum / aggregation_time, 2))
         
         # adapt the speed limit to make traffic fluent
-        occupany_desired = 0.2
+        
+        occupancy_desired = 10 # %
         occupancy_old = occupancy
         K_r = 25 # mu veh/h/%
         flow_old = flow
 
-        flow_new = flow_old + K_r * (occupany_desired - occupancy_old)
+        flow_new = flow_old + K_r * (occupancy_desired - occupancy_old)
         speed_old_top = traci.lane.getMaxSpeed(seg_0_before_top)
         speed_old_bottom = traci.lane.getMaxSpeed(seg_0_before_bottom)
+        
 
         if flow_new > flow_old:
             speed_new_top = speed_old_top - 0.1
@@ -198,7 +200,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         print('SPEED', speed_new_top)
         traci.lane.setMaxSpeed(seg_0_before_top, speed_new_top)
         traci.lane.setMaxSpeed(seg_0_before_bottom, speed_new_bottom)
-
+        
         # plot speed to flow
 
         """
