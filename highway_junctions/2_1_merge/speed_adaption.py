@@ -43,10 +43,15 @@ seg_0_before_bottom = "seg_0_before_1"
 seg_0_before_top = "seg_0_before_0"
 seg_0_after = "seg_0_after_0"
 
-traci.lane.setMaxSpeed(seg_0_before_top, 10)
-traci.lane.setMaxSpeed(seg_0_before_bottom, 10)
+# variable speed limit
+low_speed = 15
+high_speed = 36
 
-traci.lane.setMaxSpeed(seg_0_after, 10)
+traci.lane.setMaxSpeed(seg_0_before_top, high_speed)
+traci.lane.setMaxSpeed(seg_0_before_bottom, high_speed)
+
+traci.lane.setMaxSpeed(seg_0_after, high_speed)
+
 
 
 
@@ -70,9 +75,7 @@ veh_on_sum_b = 0
 veh_entered_sum_b = 0
 mean_speed_on_sum_b = 0
 
-# variable speed limit
-low_speed = 1
-high_speed = 10
+
 
 # simulation
 step = 0
@@ -170,17 +173,12 @@ while traci.simulation.getMinExpectedNumber() > 0:
         sp = traci.lane.getMaxSpeed(seg_0_before_top)
         #traci.lane.setMaxSpeed(seg_0_before_top, sp - 0.1)
 
-        if step == 10000:
-            print('OCC', occ)
-            print('FLW', flw)
-            plt.scatter(occ, flw)
-            plt.show()
-
         print('NUM', round(num_sum / aggregation_time, 2))
         
         # adapt the speed limit to make traffic fluent
         
-        occupancy_desired = 10 # %
+        
+        occupancy_desired = 5.5 # % from experiment see plots
         occupancy_old = occupancy
         K_r = 25 # mu veh/h/%
         flow_old = flow
@@ -189,19 +187,19 @@ while traci.simulation.getMinExpectedNumber() > 0:
         speed_old_top = traci.lane.getMaxSpeed(seg_0_before_top)
         speed_old_bottom = traci.lane.getMaxSpeed(seg_0_before_bottom)
         
+        speed_change = 5
 
-        if flow_new > flow_old:
-            speed_new_top = speed_old_top - 0.1
-            speed_new_bottom = speed_old_bottom - 0.1
+        #if flow_new > flow_old:
+        if occupancy_old < occupancy_desired:
+            speed_new_top = speed_old_top - speed_change
+            speed_new_bottom = speed_old_bottom - speed_change
         else:
-            speed_new_top = speed_old_top + 0.1
-            speed_new_bottom = speed_old_bottom + 0.1
+            speed_new_top = speed_old_top + speed_change
+            speed_new_bottom = speed_old_bottom + speed_change
 
         print('SPEED', speed_new_top)
         traci.lane.setMaxSpeed(seg_0_before_top, speed_new_top)
         traci.lane.setMaxSpeed(seg_0_before_bottom, speed_new_bottom)
-        
-        # plot speed to flow
 
         """
         if density_out < density_in:
@@ -225,6 +223,9 @@ while traci.simulation.getMinExpectedNumber() > 0:
         mean_speed_on_sum_b = 0
 
 
+# plot speed to flow
         
+plt.scatter(occ, flw)
+plt.show() 
 
 traci.close()
