@@ -7,7 +7,7 @@
 
     <input>
         <net-file value="./2_1_merge.net.xml"/>
-        <route-files value="./2_1_merge.rou.xml"/>
+        <route-files value="./improved_2_1_merge.rou.xml"/>
         <additional-files value="./additional.xml"/>
     </input>
 

@@ -33,7 +33,7 @@ seg_0_before = ["seg_0_before_1", "seg_0_before_0"]
 seg_0_after = ["seg_0_after_0"]
 
 low_speed = 15 # 50 km/h
-high_speed = 36 # 130 km/h
+high_speed = 33.33 # 120 km/h
 
 (traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_before)
 (traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_after)
