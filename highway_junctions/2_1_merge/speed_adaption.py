@@ -3,6 +3,7 @@ from statistics import mean
 import traci
 import numpy as np
 from matplotlib import pyplot as plt
+import control_mechanisms
 
 
 # from https://sumo.dlr.de/docs/TraCI/Interfacing_TraCI_from_Python.html
@@ -127,29 +128,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         # CONTROL MECHANISM - VARIABLE SPEED LIMIT ALGORITHM
         # implementation of https://www.sciencedirect.com/science/article/pii/S0968090X07000873        
         
-        occupancy_desired = 6 # % from experiment see plots
-        occupancy_old = occupancy
-        K_r = 25 # mu veh/h/%
-        flow_old = flow
-
-        flow_new = flow_old + K_r * (occupancy_desired - occupancy_old)
-
-        # speeds are handled in m/s
-        # speed limit should be same on all lanes of an edge
-        speed_old = traci.lane.getMaxSpeed(seg_0_before[0])
-        
-        speed_change = 1.4 # 5 km/h
-
-        if flow_new < flow_old:
-            speed_new = speed_old - speed_change
-        else:
-            speed_new = speed_old + speed_change
-
-        # keep speed in reasonable range
-        if 14 < speed_new < 38:
-            print('SPEED', speed_new)
-            (traci.lane.setMaxSpeed(lane, speed_new) for lane in seg_0_before)        
-        
+        #control_mechanisms.lecture_mechanism(occupancy_desired=6, occupancy_old=occupancy, flow_old=flow, road_segments=seg_0_before)        
         
         # another example for an easy/ naive (rule based ?) algorithm
         """
