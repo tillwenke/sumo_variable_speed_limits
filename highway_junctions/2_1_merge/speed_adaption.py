@@ -18,191 +18,142 @@ else:
 #init sumo simulation
 # -d, --delay FLOAT  Use FLOAT in ms as delay between simulation steps
 sumoBinary = "/usr/bin/sumo-gui"
-delay = '1.0'
-#sumoCmd = [sumoBinary, "-c", "2_1_merge.sumocfg", "--step-length", delay, '--start'] #no need to specify path to sumocfg
 sumoCmd = [sumoBinary, "-c", "2_1_merge.sumocfg", '--start']
 
 #run sumo simulation
 traci.start(sumoCmd)
 
+# ----------------------------------------------- VARIABLE SETTING -----------------------------------------------
 
-# parameters and sumo objects
+# LANES & MAXIMUM SPEEDS
+# naming:
+# laneSEGment_"number, 0 means closest to merge zone"_"before or after the merge"_"lane number counting from bottom to top"
+seg_0_before = ["seg_0_before_1", "seg_0_before_0"]
+seg_0_after = ["seg_0_after_0"]
 
-# define sumo objects
-# lane 0 is at bottom
-segment_length = 50 #meters
+low_speed = 15 # 50 km/h
+high_speed = 36 # 130 km/h
 
-point_loops_before = ["point_loop_seg_0_before_1", "point_loop_seg_0_before_0"]
-segment_loops_before =["segment_loop_seg_0_before_1", "segment_loop_seg_0_before_0"]
+(traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_before)
+(traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_after)
 
-point_loops_after = ["point_loop_seg_0_after_0"]
-segment_detectors_after = ["segment_detector_seg_0_after_0"]
+# ROAD SENSORS / INDUCTION LOOPS
+# defined in additional.xml
+# naming:
+# equal to lanes
+# keeping to the sumo objects used
+# loop = induction loop ... for measurements at a point
+# detector = lane are detector ... for measurements along a lane
 
-# need those?
-seg_0_before_bottom = "seg_0_before_1"
-seg_0_before_top = "seg_0_before_0"
-seg_0_after = "seg_0_after_0"
+loops_before = ["loop_seg_0_before_1", "loop_seg_0_before_0"]
 
-# variable speed limit
-low_speed = 15
-high_speed = 36
+loops_after = ["loop_seg_0_after_0"]
+detectors_after = ["detector_seg_0_after_0"]
 
-traci.lane.setMaxSpeed(seg_0_before_top, high_speed)
-traci.lane.setMaxSpeed(seg_0_before_bottom, high_speed)
+detector_length = 50 #meters
 
-traci.lane.setMaxSpeed(seg_0_after, high_speed)
-
-
-
-
-# define metrics
+# INTRODUCE METRICS
 density = 0
 flow = 0
 mean_speed = 0
-# finally travel time as overall satisfaction metric
 
-# accumulators
+occupancy = 0
+num = 0
+# ~ think about: travel time as overall satisfaction metric
+
+# metric accumulators
+veh_time_sum = 0
+veh_space_sum = 0
+mean_speed_sum = 0
+
 occupancy_sum = 0
 num_sum = 0
 occ = []
 flw = []
 
-veh_on_sum = 0
-veh_entered_sum = 0
-mean_speed_on_sum = 0
-
-veh_on_sum_b = 0
-veh_entered_sum_b = 0
-mean_speed_on_sum_b = 0
-
-
-
-# simulation
+# SIMULATION PARAMETERS
 step = 0
-aggregation_time = 100 #seconds - always aggregate the last 100 step to make decision in the present
-print('AVERAGED OVER', aggregation_time, 'STEPS')
+aggregation_time = 100 # seconds - always aggregate the last 100 step to make decision in the present
 
+# ----------------------------------------------- SIMULATION LOOP -----------------------------------------------
 
 # run till all cars are gone
 while traci.simulation.getMinExpectedNumber() > 0:
     traci.simulationStep() 
     step += 1
 
-    # detection after
-    veh_on = sum([traci.lanearea.getLastStepVehicleNumber(loop) for loop in segment_detectors_after])
-    veh_on_sum += veh_on
+    # GATHER METRICS FROM SENSORS    
+    # for some it is important to average over the number of lanes on the edge
 
-    veh_entered = sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in point_loops_before])
-    veh_entered_sum += veh_entered
+    # AFTER
+    veh_space_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_after])
+    veh_time_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_before])
 
-    # "on" the induction loop
-    mean_speed_on = sum([traci.inductionloop.getLastStepMeanSpeed(loop) for loop in point_loops_after]) / len(point_loops_after)
-    # speed if -1 if no cars pass
-    if mean_speed_on >= 0:
-        mean_speed_on_sum += mean_speed_on
+    mean_speed = sum([traci.inductionloop.getLastStepMeanSpeed(loop) for loop in loops_after]) / len(loops_after)
+    # speed -1 indicated no vehicle on the loop
+    if mean_speed >= 0:
+        mean_speed_sum += mean_speed
 
-    # detection before
-    veh_on_b = sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in segment_loops_before])
-    veh_on_sum_b += veh_on_b
-
-    veh_entered_b = sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in point_loops_before])
-    veh_entered_sum_b += veh_entered_b
-
-    # "on" the induction loop
-    mean_speed_on_b = sum([traci.inductionloop.getLastStepMeanSpeed(loop) for loop in point_loops_before]) / len(point_loops_before)
-    # speed if -1 if no cars pass
-    if mean_speed_on_b >= 0:
-        mean_speed_on_sum_b += mean_speed_on_b
-
-
-    occupancy = sum([traci.inductionloop.getLastStepOccupancy(loop) for loop in point_loops_before]) / len(point_loops_before)
-    occupancy_sum += occupancy
-
-    num = sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in point_loops_before])
-    num_sum += num
-
-    # output
-    # sanity check against the XML output
-    """
-    if step < 100:
-        print(step-1, veh_on, '|', mean_speed_on)
-    """
+    # BEFORE
+    # collecting the number of vehicles and occupancy right in front (or even in) of the merge area
+    occupancy_sum += sum([traci.inductionloop.getLastStepOccupancy(loop) for loop in loops_before]) / len(loops_before)
+    num_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_before])
     
+    # EVALUATE THE METRICS FREQUENTLY AND USE TO ADJUST VARIABLE SPEED LIMITS
     if step % aggregation_time == 0:
-        
-        # after
-        avg_num_veh_on = veh_on_sum / aggregation_time
-        density = (avg_num_veh_on / segment_length) * 1000
 
-        density_out = density
+        # collected metrics are devided by the aggregation time to get the average values
+        
+        # AFTER THE MERGE
+        density = ((veh_space_sum / aggregation_time) / detector_length) * 1000
+        flow = (veh_time_sum / aggregation_time) * 3600
+        flw.append(flow)
+        mean_speed = (mean_speed_sum / aggregation_time) * 3.6 # one speed metric is enough - equals to spot speed
             
-        print('density', round(density,3), 'veh/km ', end='; ')
-
-        flow = (veh_entered_sum / aggregation_time) * 3600
-        # the point_loop should act as point detector
-        # not expected to have one single car on it for more than 1 time step
-        print('flow', flow, 'veh/h', end='; ')
-        
-        # one speed metric is enough
-        # this equals to spot speed as induction loop is short
-        mean_speed = (mean_speed_on_sum / aggregation_time) * 3.6
+        print('density', round(density,3), 'veh/km ', end='; ')        
+        print('flow', flow, 'veh/h', end='; ')        
         print('speed', round(mean_speed,2), 'km/h', end='; ')
 
-        # before
-        avg_num_veh_on = veh_on_sum_b / aggregation_time
-        density = avg_num_veh_on / segment_length
-
-        density_in = density
-            
-        print('density', round(density,3), 'veh/m ', end='; ')
-
-        flow = veh_entered_sum_b / aggregation_time 
-        # the point_loop should act as point detector
-        # not expected to have one single car on it for more than 1 time step
-        print('flow', flow, 'veh/s', end='; ')
-        
-        # one speed metric is enough
-        # this equals to spot speed as induction loop is short
-        mean_speed = mean_speed_on_sum_b / aggregation_time
-        print('speed', round(mean_speed,2), 'm/s')
+        # BEFORE THE MERGE
 
         occupancy = occupancy_sum / aggregation_time
-        print('OCC', round(occupancy, 2))
         occ.append(occupancy)
-        flw.append(flow)
-        sp = traci.lane.getMaxSpeed(seg_0_before_top)
-        #traci.lane.setMaxSpeed(seg_0_before_top, sp - 0.1)
+        num = num_sum / aggregation_time
 
-        print('NUM', round(num_sum / aggregation_time, 2))
+        print('OCC', round(occupancy, 2))
+        print('NUM', round(num, 2))
+    
         
-        # adapt the speed limit to make traffic fluent
+        # CONTROL MECHANISM - VARIABLE SPEED LIMIT ALGORITHM
+        # implementation of https://www.sciencedirect.com/science/article/pii/S0968090X07000873        
         
-        
-        occupancy_desired = 5.5 # % from experiment see plots
+        occupancy_desired = 6 # % from experiment see plots
         occupancy_old = occupancy
         K_r = 25 # mu veh/h/%
         flow_old = flow
 
         flow_new = flow_old + K_r * (occupancy_desired - occupancy_old)
-        speed_old_top = traci.lane.getMaxSpeed(seg_0_before_top)
-        speed_old_bottom = traci.lane.getMaxSpeed(seg_0_before_bottom)
+
+        # speeds are handled in m/s
+        # speed limit should be same on all lanes of an edge
+        speed_old = traci.lane.getMaxSpeed(seg_0_before[0])
         
-        speed_change = 5
+        speed_change = 1.4 # 5 km/h
 
-        #if flow_new > flow_old:
-        if occupancy_old < occupancy_desired:
-            speed_new_top = speed_old_top - speed_change
-            speed_new_bottom = speed_old_bottom - speed_change
+        if flow_new < flow_old:
+            speed_new = speed_old - speed_change
         else:
-            speed_new_top = speed_old_top + speed_change
-            speed_new_bottom = speed_old_bottom + speed_change
+            speed_new = speed_old + speed_change
 
-        print('SPEED', speed_new_top)
-        traci.lane.setMaxSpeed(seg_0_before_top, speed_new_top)
-        traci.lane.setMaxSpeed(seg_0_before_bottom, speed_new_bottom)
-
+        # keep speed in reasonable range
+        if 14 < speed_new < 38:
+            print('SPEED', speed_new)
+            (traci.lane.setMaxSpeed(lane, speed_new) for lane in seg_0_before)        
+        
+        
+        # another example for an easy/ naive (rule based ?) algorithm
         """
-        if density_out < density_in:
+        if density_after < density_before:
             top = traci.lane.getMaxSpeed(seg_0_before_top)
             bottom = traci.lane.getMaxSpeed(seg_0_before_bottom)
 
@@ -210,21 +161,15 @@ while traci.simulation.getMinExpectedNumber() > 0:
             traci.lane.setMaxSpeed(seg_0_before_bottom, bottom + 0.1)
         """
 
-        # reset accum
+        # reset accumulator
+        veh_time_sum = 0
+        veh_space_sum = 0
+        mean_speed_sum = 0
+
         occupancy_sum = 0
         num_sum = 0
 
-        veh_on_sum = 0
-        veh_entered_sum = 0
-        mean_speed_on_sum = 0
-
-        veh_on_sum_b = 0
-        veh_entered_sum_b = 0
-        mean_speed_on_sum_b = 0
-
-
-# plot speed to flow
-        
+# plot occupancy and flow diagram to get capacity flow     
 plt.scatter(occ, flw)
 plt.show() 
 

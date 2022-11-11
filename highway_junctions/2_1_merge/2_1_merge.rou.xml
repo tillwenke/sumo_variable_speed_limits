@@ -9,7 +9,7 @@
     <route id="r_1" edges="E2 seg_0_before seg_0_after"/>
     <route id="r_2" edges="E3 seg_0_before seg_0_after"/>
     <!-- Vehicles, persons and containers (sorted by depart) -->
-    <flow id="f_0" begin="0.00" route="r_1" end="3600.00" vehsPerHour="1800.00"/>
-    <flow id="f_1" begin="0.00" route="r_2" end="3600.00" vehsPerHour="1800.00"/>
-    <flow id="f_2" begin="0.00" route="r_0" end="3600.00" vehsPerHour="1800.00"/>
+    
+    <flow id="f_1" begin="0.00" route="r_2" end="50.00" period="exp(10.00)"/>
+    <flow id="f_2" begin="0.00" route="r_0" end="50.00" period="exp(10.00)"/>
 </routes>
