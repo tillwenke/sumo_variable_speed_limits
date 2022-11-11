@@ -1,8 +1,10 @@
 <additional>    
+    <inductionLoop id="loop_seg_0_after_1" lane="seg_0_after_1" pos="50" period="1" file="inductive_loop_metrics.xml"/>
     <inductionLoop id="loop_seg_0_after_0" lane="seg_0_after_0" pos="50" period="1" file="inductive_loop_metrics.xml"/>
+    <laneAreaDetector id="detector_seg_0_after_1" lane="seg_0_after_1" pos="50" endpos="100" length="50" period="1" file="inductive_loop_metrics.xml"/>
     <laneAreaDetector id="detector_seg_0_after_0" lane="seg_0_after_0" pos="50" endpos="100" length="50" period="1" file="inductive_loop_metrics.xml"/>
     
-    <inductionLoop id="loop_seg_0_before_1" lane="seg_0_before_1" pos="-250" period="1" file="inductive_loop_metrics.xml"/>    
-
-    <inductionLoop id="loop_seg_0_before_0" lane="seg_0_before_0" pos="-250" period="1"  file="inductive_loop_metrics.xml"/>      
+    <inductionLoop id="loop_seg_0_before_2" lane="seg_0_before_2" pos="-200" period="1" file="inductive_loop_metrics.xml"/> 
+    <inductionLoop id="loop_seg_0_before_1" lane="seg_0_before_1" pos="-200" period="1" file="inductive_loop_metrics.xml"/>
+    <inductionLoop id="loop_seg_0_before_0" lane="seg_0_before_0" pos="-200" period="1"  file="inductive_loop_metrics.xml"/>      
 </additional>

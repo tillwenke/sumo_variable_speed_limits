@@ -60,7 +60,6 @@ high_speed = 33.33 # 120 km/h
 [traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_after]
 [traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_1_after]
 
-print(traci.lane.getMaxSpeed("seg_0_before_2"))
 
 # ROAD SENSORS / INDUCTION LOOPS
 # defined in additional.xml
@@ -70,10 +69,10 @@ print(traci.lane.getMaxSpeed("seg_0_before_2"))
 # loop = induction loop ... for measurements at a point
 # detector = lane are detector ... for measurements along a lane
 
-loops_before = ["loop_seg_0_before_1", "loop_seg_0_before_0"]
+loops_before = ["loop_seg_0_before_1", "loop_seg_0_before_1", "loop_seg_0_before_0"]
 
-loops_after = ["loop_seg_0_after_0"]
-detectors_after = ["detector_seg_0_after_0"]
+loops_after = ["loop_seg_0_after_0", "loop_seg_0_after_0"]
+detectors_after = ["detector_seg_0_after_0", "detector_seg_0_after_0"]
 
 detector_length = 50 #meters
 
@@ -98,7 +97,7 @@ flw = []
 
 # SIMULATION PARAMETERS
 step = 0
-aggregation_time = 100 # seconds - always aggregate the last 100 step to make decision in the present
+aggregation_time = 30 # seconds - always aggregate the last 100 step to make decision in the present
 
 # ----------------------------------------------- SIMULATION LOOP -----------------------------------------------
 
@@ -112,7 +111,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
     # AFTER
     veh_space_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_after])
-    veh_time_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_before])
+    veh_time_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_after])
 
     mean_speed = sum([traci.inductionloop.getLastStepMeanSpeed(loop) for loop in loops_after]) / len(loops_after)
     # speed -1 indicated no vehicle on the loop
@@ -172,8 +171,9 @@ while traci.simulation.getMinExpectedNumber() > 0:
         occupancy_sum = 0
         num_sum = 0
 
-# plot occupancy and flow diagram to get capacity flow     
-plt.scatter(occ, flw)
+# plot occupancy and flow diagram to get capacity flow    
+fig, ax = plt.subplots(1,1, figsize=(15,30)) 
+plt.plot(occ, flw, 'bo')
 plt.show() 
 
 traci.close()
