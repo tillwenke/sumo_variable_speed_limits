@@ -25,5 +25,5 @@ def lecture_mechanism(occupancy_desired, occupancy_old, flow_old, road_segments)
     # keep speed in reasonable range
     if 14 < speed_new < 38:
         print('SPEED', speed_new)
-        (traci.lane.setMaxSpeed(lane, speed_new) for lane in road_segments)   
+        [traci.lane.setMaxSpeed(lane, speed_new) for lane in road_segments]
 

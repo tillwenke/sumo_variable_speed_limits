@@ -29,14 +29,38 @@ traci.start(sumoCmd)
 # LANES & MAXIMUM SPEEDS
 # naming:
 # laneSEGment_"number, 0 means closest to merge zone"_"before or after the merge"_"lane number counting from bottom to top"
-seg_0_before = ["seg_0_before_1", "seg_0_before_0"]
-seg_0_after = ["seg_0_after_0"]
+seg_10_before = ["seg_10_before_2", "seg_10_before_1", "seg_10_before_0"]
+seg_9_before = ["seg_9_before_2", "seg_9_before_1", "seg_9_before_0"]
+seg_8_before = ["seg_8_before_2", "seg_8_before_1", "seg_8_before_0"]
+seg_7_before = ["seg_7_before_2", "seg_7_before_1", "seg_7_before_0"]
+seg_6_before = ["seg_0_before_2", "seg_6_before_1", "seg_6_before_0"]
+seg_5_before = ["seg_5_before_2", "seg_5_before_1", "seg_5_before_0"]
+seg_4_before = ["seg_4_before_2", "seg_4_before_1", "seg_4_before_0"]
+seg_3_before = ["seg_3_before_2", "seg_3_before_1", "seg_3_before_0"]
+seg_2_before = ["seg_2_before_2", "seg_2_before_1", "seg_2_before_0"]
+seg_1_before = ["seg_1_before_2", "seg_1_before_1", "seg_1_before_0"]
+seg_0_before = ["seg_0_before_2", "seg_0_before_1", "seg_0_before_0"]
+seg_0_after = ["seg_0_after_1", "seg_0_after_0"]
+seg_1_after = ["seg_1_after_1", "seg_1_after_0"]
 
 low_speed = 15 # 50 km/h
 high_speed = 33.33 # 120 km/h
 
-(traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_before)
-(traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_after)
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_10_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_9_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_8_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_7_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_6_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_5_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_4_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_3_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_2_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_1_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_before]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_0_after]
+[traci.lane.setMaxSpeed(lane, high_speed) for lane in seg_1_after]
+
+print(traci.lane.getMaxSpeed("seg_0_before_2"))
 
 # ROAD SENSORS / INDUCTION LOOPS
 # defined in additional.xml
@@ -82,7 +106,7 @@ aggregation_time = 100 # seconds - always aggregate the last 100 step to make de
 while traci.simulation.getMinExpectedNumber() > 0:
     traci.simulationStep() 
     step += 1
-
+    
     # GATHER METRICS FROM SENSORS    
     # for some it is important to average over the number of lanes on the edge
 
