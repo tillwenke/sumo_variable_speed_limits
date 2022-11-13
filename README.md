@@ -17,3 +17,7 @@ Project repository for Intelligent Transportation Systems course.
 On 21st Oct
 - Jure took a look into "autobahn" = create a realistic traffic 
 - Till tried to caputure metrics with inductive loop - but retrieving it via python is a little flawed
+
+## Future
+
+- define measures of good traffic (also in http://vti.diva-portal.org/smash/get/diva2:794891/FULLTEXT01.pdf)
