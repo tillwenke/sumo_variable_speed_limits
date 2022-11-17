@@ -10,5 +10,11 @@
         <route-files value="./improved_2_1_merge.rou.xml"/>
         <additional-files value="./additional.xml"/>
     </input>
+    <emissions>
+		<phemlight-path value="%SUMO_HOME%\data\emissions\PHEMlight>" />
+		<device.emissions.probability value="1.0" />
+		<device.emissions.deterministic value="true" />
+		<device.emissions.explicit value="PHEMlight/PC_G_EU4" />
+    </emissions>
 
 </configuration>

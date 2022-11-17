@@ -24,4 +24,9 @@
     <inductionLoop id="loop_seg_0_before_2D" lane="seg_0_before_2" pos="-300" period="1" file="inductive_loop_metrics.xml"/> 
     <inductionLoop id="loop_seg_0_before_1D" lane="seg_0_before_1" pos="-300" period="1" file="inductive_loop_metrics.xml"/>
     <inductionLoop id="loop_seg_0_before_0D" lane="seg_0_before_0" pos="-300" period="1"  file="inductive_loop_metrics.xml"/> 
+
+
+	<edgeData id="EDGEID" file="edgeoutput.xml" />
+	<edgeData id="EMISSIONS_DETECTOR_ID_1" type="emissions" file="2_1_merge_emissions.xml" excludeEmpty="true" />
+
 </additional>
