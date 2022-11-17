@@ -26,6 +26,8 @@ traci.start(sumoCmd)
 
 # ----------------------------------------------- VARIABLE SETTING -----------------------------------------------
 
+edges = ["seg_10_before","seg_9_before","seg_8_before","seg_7_before","seg_6_before","seg_5_before","seg_4_before","seg_3_before","seg_2_before","seg_1_before","seg_0_before","seg_0_after","seg_1_after"]
+
 # LANES & MAXIMUM SPEEDS
 # naming:
 # laneSEGment_"number, 0 means closest to merge zone"_"before or after the merge"_"lane number counting from bottom to top"
@@ -89,6 +91,12 @@ density = 0
 flow = 0
 mean_speed = 0
 
+# overall road speed stuff
+mean_edge_speed = np.zeros(len(edges)) # for each edge
+mean_road_speed = 0
+ms = [] # mean speeds
+
+
 occupancy = 0 # highest anywhere in segment before merge
 num = 0
 
@@ -137,6 +145,9 @@ while traci.simulation.getMinExpectedNumber() > 0:
     if mean_speed >= 0:
         mean_speed_sum += mean_speed
 
+    for i, edge in enumerate(edges):
+        mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
+
     # BEFORE
     veh_space_before_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_before])
 
@@ -155,6 +166,12 @@ while traci.simulation.getMinExpectedNumber() > 0:
     if step % aggregation_time == 0:
 
         # collected metrics are devided by the aggregation time to get the average values
+        # OVERALL
+        mean_edge_speed = mean_edge_speed / aggregation_time # first is acutally a sum
+        print(mean_edge_speed)
+        mean_road_speed = sum(mean_edge_speed) / len(mean_edge_speed)
+        print(mean_road_speed)
+        ms.append(mean_road_speed)
         
         # AFTER THE MERGE
         density = ((veh_space_sum / aggregation_time) / detector_length) * 1000
@@ -182,6 +199,9 @@ while traci.simulation.getMinExpectedNumber() > 0:
         veh_space_sum = 0
         mean_speed_sum = 0
 
+        mean_edge_speed = np.zeros(len(edges))
+        mean_road_speed = 0
+
         veh_space_before_sum = 0
         occupancy_sum = 0
         num_sum = 0
@@ -196,5 +216,7 @@ print('FLOW MAX',max(flw))
 plt.xticks(np.arange(min(occ), max(occ)+1, 1.0))
 plt.plot(occ, flw, 'bo')
 plt.show() 
+plt.plot(ms)
+plt.show()
 
 traci.close()
