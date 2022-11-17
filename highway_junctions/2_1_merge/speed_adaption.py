@@ -96,6 +96,8 @@ mean_edge_speed = np.zeros(len(edges)) # for each edge
 mean_road_speed = 0
 ms = [] # mean speeds
 
+emissions = np.zeros(len(edges)) # for each edge
+
 
 occupancy = 0 # highest anywhere in segment before merge
 num = 0
@@ -147,6 +149,8 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
     for i, edge in enumerate(edges):
         mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
+        emissions[i] += traci.edge.getCO2Emission(edge)
+    
 
     # BEFORE
     veh_space_before_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_before])
@@ -192,7 +196,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         
         #control_mechanisms.lecture_mechanism(occupancy_desired=11, occupancy_old=occupancy, flow_old=flow, road_segments=segments_before[:10])  
 
-        b = control_mechanisms.mtfc(occupancy, 14, b, speed_max, application_area)
+        #b = control_mechanisms.mtfc(occupancy, 14, b, speed_max, application_area)
 
         # reset accumulator
         veh_time_sum = 0
@@ -212,7 +216,10 @@ fig, ax = plt.subplots(1,1, figsize=(15,30))
 #plt.plot(dens, flw, 'bo', )
 #plt.show()
 
+print("CO2",emissions)
 print('FLOW MAX',max(flw))
+
+
 plt.xticks(np.arange(min(occ), max(occ)+1, 1.0))
 plt.plot(occ, flw, 'bo')
 plt.show() 
