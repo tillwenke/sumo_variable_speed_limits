@@ -18,7 +18,8 @@ else:
 
 #init sumo simulation
 # -d, --delay FLOAT  Use FLOAT in ms as delay between simulation steps
-sumoBinary = "/usr/bin/sumo-gui"
+executable = 'sumo-gui.exe' if os.name == 'nt' else 'sumo-gui'
+sumoBinary = os.path.join(os.environ['SUMO_HOME'], 'bin', executable)
 sumoCmd = [sumoBinary, "-c", "2_1_merge.sumocfg", '--start']
 
 #run sumo simulation
