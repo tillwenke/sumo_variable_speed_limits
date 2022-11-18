@@ -18,7 +18,8 @@ else:
 
 #init sumo simulation
 # -d, --delay FLOAT  Use FLOAT in ms as delay between simulation steps
-sumoBinary = "/usr/bin/sumo-gui"
+executable = 'sumo-gui.exe' if os.name == 'nt' else 'sumo-gui'
+sumoBinary = os.path.join(os.environ['SUMO_HOME'], 'bin', executable)
 sumoCmd = [sumoBinary, "-c", "2_1_merge.sumocfg", '--start']
 
 #run sumo simulation
@@ -155,7 +156,13 @@ while traci.simulation.getMinExpectedNumber() > 0:
     if step % aggregation_time == 0:
 
         # collected metrics are devided by the aggregation time to get the average values
-        
+        # OVERALL
+        mean_edge_speed = mean_edge_speed / aggregation_time # first is acutally a sum
+        print(mean_edge_speed)
+        mean_road_speed = sum(mean_edge_speed) / len(mean_edge_speed)
+        print(mean_road_speed)
+        ms.append(mean_road_speed)
+
         # AFTER THE MERGE
         density = ((veh_space_sum / aggregation_time) / detector_length) * 1000
         flow = (veh_time_sum / aggregation_time) * 3600
@@ -176,6 +183,8 @@ while traci.simulation.getMinExpectedNumber() > 0:
         #control_mechanisms.lecture_mechanism(occupancy_desired=11, occupancy_old=occupancy, flow_old=flow, road_segments=segments_before[:10])  
 
         b = control_mechanisms.mtfc(occupancy, 14, b, speed_max, application_area)
+
+        #control_mechanisms.mcs(segments_before, speed_max)
 
         # reset accumulator
         veh_time_sum = 0

@@ -4,6 +4,8 @@ import traci
 import numpy as np
 from matplotlib import pyplot as plt
 
+TO_MPS = 5/18
+TO_KMPH = 18/5
 
 def lecture_mechanism(occupancy_desired, occupancy_old, flow_old, road_segments):
     # occupancy_desired from plot experiments
@@ -57,6 +59,25 @@ def mtfc(occupancy, occupancy_desired, b_old, max_speed, application_segments):
         print('NO SPEED CHANGE')
         return b_old
 
+def mcs(segments, default_speed: float):    
+
+    default_speed = default_speed*TO_KMPH
+    mean_speed = traci.edge.getLastStepMeanSpeed('seg_0_before')*TO_KMPH
+
+    speed_limits = None
+    target_segments = segments[-6:]
+
+    if mean_speed <= 45:
+        print('Adjusting speed limits.')
+        speed_limits = [100, 100, 80, 80, 60, 60]
+    else:
+        print('Reseting speed limits.')
+        speed_limits = [default_speed]*len(target_segments)
+
+    # Update speed limits.
+    for limit, seg in zip(speed_limits, target_segments):
+        for lane in seg:
+            traci.lane.setMaxSpeed(lane, limit*TO_MPS)
 
 
 # another example for an easy/ naive (rule based ?) algorithm
