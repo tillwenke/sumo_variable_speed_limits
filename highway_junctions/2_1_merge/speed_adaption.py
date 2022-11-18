@@ -27,6 +27,8 @@ traci.start(sumoCmd)
 
 # ----------------------------------------------- VARIABLE SETTING -----------------------------------------------
 
+edges = ["seg_10_before","seg_9_before","seg_8_before","seg_7_before","seg_6_before","seg_5_before","seg_4_before","seg_3_before","seg_2_before","seg_1_before","seg_0_before","seg_0_after","seg_1_after"]
+
 # LANES & MAXIMUM SPEEDS
 # naming:
 # laneSEGment_"number, 0 means closest to merge zone"_"before or after the merge"_"lane number counting from bottom to top"
@@ -90,6 +92,14 @@ density = 0
 flow = 0
 mean_speed = 0
 
+# overall road speed stuff
+mean_edge_speed = np.zeros(len(edges)) # for each edge
+mean_road_speed = 0
+ms = [] # mean speeds
+
+emissions = np.zeros(len(edges)) # for each edge
+
+
 occupancy = 0 # highest anywhere in segment before merge
 num = 0
 
@@ -138,6 +148,11 @@ while traci.simulation.getMinExpectedNumber() > 0:
     if mean_speed >= 0:
         mean_speed_sum += mean_speed
 
+    for i, edge in enumerate(edges):
+        mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
+        emissions[i] += traci.edge.getCO2Emission(edge)
+    
+
     # BEFORE
     veh_space_before_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_before])
 
@@ -182,7 +197,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         
         #control_mechanisms.lecture_mechanism(occupancy_desired=11, occupancy_old=occupancy, flow_old=flow, road_segments=segments_before[:10])  
 
-        b = control_mechanisms.mtfc(occupancy, 14, b, speed_max, application_area)
+        #b = control_mechanisms.mtfc(occupancy, 14, b, speed_max, application_area)
 
         #control_mechanisms.mcs(segments_before, speed_max)
 
@@ -190,6 +205,9 @@ while traci.simulation.getMinExpectedNumber() > 0:
         veh_time_sum = 0
         veh_space_sum = 0
         mean_speed_sum = 0
+
+        mean_edge_speed = np.zeros(len(edges))
+        mean_road_speed = 0
 
         veh_space_before_sum = 0
         occupancy_sum = 0
@@ -201,9 +219,14 @@ fig, ax = plt.subplots(1,1, figsize=(15,30))
 #plt.plot(dens, flw, 'bo', )
 #plt.show()
 
+print("CO2",emissions)
 print('FLOW MAX',max(flw))
+
+
 plt.xticks(np.arange(min(occ), max(occ)+1, 1.0))
 plt.plot(occ, flw, 'bo')
 plt.show() 
+plt.plot(ms)
+plt.show()
 
 traci.close()
