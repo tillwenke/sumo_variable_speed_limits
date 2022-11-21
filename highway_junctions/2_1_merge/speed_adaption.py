@@ -173,9 +173,9 @@ while traci.simulation.getMinExpectedNumber() > 0:
         # collected metrics are devided by the aggregation time to get the average values
         # OVERALL
         mean_edge_speed = mean_edge_speed / aggregation_time # first is acutally a sum
-        print(mean_edge_speed)
+        #print(mean_edge_speed)
         mean_road_speed = sum(mean_edge_speed) / len(mean_edge_speed)
-        print(mean_road_speed)
+        #print(mean_road_speed)
         ms.append(mean_road_speed)
 
         # AFTER THE MERGE
@@ -197,7 +197,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         
         #control_mechanisms.lecture_mechanism(occupancy_desired=11, occupancy_old=occupancy, flow_old=flow, road_segments=segments_before[:10])  
 
-        #b = control_mechanisms.mtfc(occupancy, 14, b, speed_max, application_area)
+        #b = control_mechanisms.mtfc(occupancy, 12, b, speed_max, application_area)
 
         #control_mechanisms.mcs(segments_before, speed_max)
 
