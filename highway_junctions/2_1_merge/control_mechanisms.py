@@ -59,10 +59,12 @@ def mtfc(occupancy, occupancy_desired, b_old, max_speed, application_segments):
         print('NO SPEED CHANGE')
         return b_old
 
-def mcs(segments, default_speed: float):    
+def mcs(segments, default_max_speed: float, mean_speeds):
 
-    default_speed = default_speed*TO_KMPH
-    mean_speed = traci.edge.getLastStepMeanSpeed('seg_0_before')*TO_KMPH
+    default_max_speed = default_max_speed*TO_KMPH
+
+    n_samples = 10
+    mean_speed = sum(mean_speeds[-n_samples:]) / len(mean_speeds[-n_samples:])*TO_KMPH
 
     speed_limits = None
     target_segments = segments[-6:]
@@ -72,7 +74,7 @@ def mcs(segments, default_speed: float):
         speed_limits = [100, 100, 80, 80, 60, 60]
     else:
         print('Reseting speed limits.')
-        speed_limits = [default_speed]*len(target_segments)
+        speed_limits = [default_max_speed]*len(target_segments)
 
     # Update speed limits.
     for limit, seg in zip(speed_limits, target_segments):

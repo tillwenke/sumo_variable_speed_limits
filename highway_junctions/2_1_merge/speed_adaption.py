@@ -199,7 +199,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
         #b = control_mechanisms.mtfc(occupancy, 12, b, speed_max, application_area)
 
-        #control_mechanisms.mcs(segments_before, speed_max)
+        control_mechanisms.mcs(segments_before, speed_max, ms)
 
         # reset accumulator
         veh_time_sum = 0
