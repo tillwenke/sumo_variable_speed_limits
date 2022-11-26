@@ -1,0 +1,14 @@
+follow setup of cars as described in chap 6 http://vti.diva-portal.org/smash/get/diva2:794891/FULLTEXT01.pdf
+mainly:
+lower acceleration to 0.8
+higher tau/ reaction time to 1.3 (despite the source this should avoid that congestion only emerges on lower lanes - but from my observation it causes exactly this congestion)
+
+send out more/ less ober time via cars with constant flow over route
+-> ! there is a limit of cars spawning -> cars are spawned for longer time than expected
+-> to release cars as given in the route file, set: departLane="free" departPos="free" departSpeed="speedLimit"
+-> enables all cars to spawn as desired by spawning them on any lane and at any position at the desired edge with maximum speed immediatelly
+as found here https://stackoverflow.com/questions/67331352/sumo-veins-not-spawning-all-vehicles
+
+just one way to create a congested situation -> think about more eg poisson dist.
+
+Srivastava and Geroliminis (2013) ~ to set sensors right
