@@ -59,25 +59,67 @@ def mtfc(occupancy, occupancy_desired, b_old, max_speed, application_segments):
         print('NO SPEED CHANGE')
         return b_old
 
-def mcs(segments, default_speed: float):    
+def harmonic_mean_speed(speed_measured: float, harm_speed_previous: float, alpha: float = 0.25):
+    speed_measured = max(0.01, speed_measured)
+    return 1 / (alpha*(1 / speed_measured) + (1 - alpha)*(1 / harm_speed_previous))
 
-    default_speed = default_speed*TO_KMPH
-    mean_speed = traci.edge.getLastStepMeanSpeed('seg_0_before')*TO_KMPH
+def min_speed_for_segment(segment):
+    return min([ traci.lane.getLastStepMeanSpeed(lane) for lane in segment ])
 
+def mcs(segments: list, default_max_speed: float, previous_harm_speeds: list):
+
+    default_max_speed = default_max_speed*TO_KMPH
+
+    segments.reverse()
+    seg_iter = iter(segments)
+    segments = list(zip(seg_iter, seg_iter))
+
+    speed_limits = [default_max_speed]*len(segments)
+    harm_speeds = []
+
+    for i, (seg1, seg2) in enumerate(segments):
+        if i+2 == len(segments):
+            break
+
+        mean_speed = ((min_speed_for_segment(seg1) + min_speed_for_segment(seg2)) / 2)*TO_KMPH
+        harm_mean_speed = harmonic_mean_speed(mean_speed, previous_harm_speeds[i])
+        harm_speeds.append(harm_mean_speed)
+
+        if harm_mean_speed <= 45:
+            speed_limits[i]   = min(60, speed_limits[i])
+            speed_limits[i+1] = min(80, speed_limits[i+1])
+            speed_limits[i+2] = min(100, speed_limits[i+2])
+        else:
+            speed_limits[i]   = min(120, speed_limits[i])
+            speed_limits[i+1] = min(120, speed_limits[i+1])
+            speed_limits[i+2] = min(120, speed_limits[i+2])
+
+    for (seg1, seg2), limit in zip(segments, speed_limits):
+        for lane1, lane2 in zip(seg1, seg2):
+            traci.lane.setMaxSpeed(lane1, limit*TO_MPS)
+            traci.lane.setMaxSpeed(lane2, limit*TO_MPS)
+
+    print(speed_limits)
+
+    return harm_speeds
+
+        
+    """
     speed_limits = None
     target_segments = segments[-6:]
 
     if mean_speed <= 45:
         print('Adjusting speed limits.')
-        speed_limits = [100, 100, 80, 80, 60, 60]
+        speed_limits = [80, 80, 60, 60, 40, 40]
     else:
         print('Reseting speed limits.')
-        speed_limits = [default_speed]*len(target_segments)
+        speed_limits = [default_max_speed]*len(target_segments)
 
     # Update speed limits.
     for limit, seg in zip(speed_limits, target_segments):
         for lane in seg:
             traci.lane.setMaxSpeed(lane, limit*TO_MPS)
+    """
 
 
 # another example for an easy/ naive (rule based ?) algorithm

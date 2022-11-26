@@ -127,7 +127,7 @@ print(application_area)
 # SIMULATION PARAMETERS
 step = 0
 aggregation_time = 30 # seconds - always aggregate the last 100 step to make decision in the present
-
+previous_harm_speeds = [120] * int(len(segments_before) / 2)
 
 # ----------------------------------------------- SIMULATION LOOP -----------------------------------------------
 
@@ -198,8 +198,8 @@ while traci.simulation.getMinExpectedNumber() > 0:
         #control_mechanisms.lecture_mechanism(occupancy_desired=11, occupancy_old=occupancy, flow_old=flow, road_segments=segments_before[:10])  
 
         #b = control_mechanisms.mtfc(occupancy, 12, b, speed_max, application_area)
-
-        #control_mechanisms.mcs(segments_before, speed_max)
+        
+        previous_harm_speeds = control_mechanisms.mcs(segments_before, speed_max, previous_harm_speeds)
 
         # reset accumulator
         veh_time_sum = 0
