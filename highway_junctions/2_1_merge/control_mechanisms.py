@@ -86,9 +86,9 @@ def mcs(segments: list, default_max_speed: float, previous_harm_speeds: list):
         harm_speeds.append(harm_mean_speed)
 
         if harm_mean_speed <= 45:
-            speed_limits[i]   = 60
-            speed_limits[i+1] = 80
-            speed_limits[i+2] = 100
+            speed_limits[i]   = min(60, speed_limits[i])
+            speed_limits[i+1] = min(80, speed_limits[i+1])
+            speed_limits[i+2] = min(100, speed_limits[i+2])
         else:
             speed_limits[i]   = min(120, speed_limits[i])
             speed_limits[i+1] = min(120, speed_limits[i+1])
