@@ -15,18 +15,21 @@ from rl.agents import DQNAgent
 from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
 
+import rl_utils
+
+max_speed = 150
+
 class SUMOEnv(Env):
     def __init__(self):
         # Actions we can take, down, stay, up
         self.action_space = Discrete(3)
         # avg speed array
-        self.observation_space = Box(low=np.array([0]), high=np.array([120]))
-        # Set optimizable parameters
-        self.state = 0 # avg speed
+        self.observation_space = Box(low=np.array([0]), high=np.array([1]))
+        self.state = 0 # mean speed and occupancy
+        self.state_speed = 0
         self.speed_limit = 120 # to be changed actively
         # Set simulation length
         self.sim_length = 120 # 30 x 120 = 3600 steps
-
         # SUMO specific
         #run sumo simulation
         traci.start(sumoCmd)
@@ -37,14 +40,14 @@ class SUMOEnv(Env):
         # 1 -1 = 0 
         # 2 -1 = 1 
         self.speed_limit += (action - 1) * 10
-        if self.speed_limit > 150:
-            self.speed_limit = 150
+        if self.speed_limit > max_speed:
+            self.speed_limit = max_speed
         if self.speed_limit < 50:
             self.speed_limit = 50        
 
         # copied from mtfc
         speed_new = self.speed_limit / 3.6 # km/h to m/s
-        road_segments = [seg_9_before, seg_8_before, seg_7_before, seg_6_before, seg_5_before, seg_4_before, seg_3_before, seg_2_before, seg_1_before]
+        road_segments = [seg_1_before]
 
         for segment in road_segments:
             [traci.lane.setMaxSpeed(lane, speed_new) for lane in segment]
@@ -54,8 +57,10 @@ class SUMOEnv(Env):
         
         # Calculate reward
         # TODO define desired values
-        if self.state >=90 and self.state <=120:
-            reward =1 
+        # only depend on the mean speed not the occupancy [1]
+        # account for normalized mean speed
+        if self.state_speed >=(90/max_speed) and self.state_speed <= (120/max_speed):
+            reward = 1 
         else: 
             reward = -1 
         
@@ -98,13 +103,14 @@ class SUMOEnv(Env):
 
             # collecting the number of vehicles and occupancy right in front (or even in) of the merge area
             # choose max occupancy of a few sensors
-            #occ_max = 0
-            #for loops in loops_before:
-                #occ_loop = sum([traci.inductionloop.getLastStepOccupancy(loop) for loop in loops]) / len(loops)
-                #if occ_loop > occ_max:
-                    #occ_max = occ_loop
+            occupancy_sum = 0
+            occ_max = 0
+            for loops in loops_before:
+                occ_loop = sum([traci.inductionloop.getLastStepOccupancy(loop) for loop in loops]) / len(loops)
+                if occ_loop > occ_max:
+                    occ_max = occ_loop
 
-            #occupancy_sum += occ_max
+            occupancy_sum += occ_max
             #num_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_before[0]]) # only at one sensor
 
 
@@ -126,7 +132,7 @@ class SUMOEnv(Env):
         #density_before = ((veh_space_before_sum / aggregation_time) / detector_length) * 1000
         #dens.append(density_before)
 
-        #occupancy = occupancy_sum / aggregation_time
+        occupancy = occupancy_sum / aggregation_time
         #occ.append(occupancy)
         #num = num_sum / aggregation_time
         
@@ -145,7 +151,10 @@ class SUMOEnv(Env):
         # ------------------------------ SUMO ------------------------------
         
         # gets the avg speed from the simulation
-        self.state += mean_road_speed
+        # normalize the speed
+        self.state = occupancy
+        self.state_speed = mean_road_speed * 3.6 / max_speed  # m/s to km/h
+        #print('>', self.state, self.state_speed * max_speed, self.speed_limit, '\n')
 
         # Set placeholder for info
         info = {}
@@ -160,6 +169,7 @@ class SUMOEnv(Env):
     def reset(self):
         # Reset params
         self.state = 0
+        self.state_speed = 0
         self.speed_limit = 120
         # Reset time
         self.sim_length = 120
@@ -176,10 +186,10 @@ class SUMOEnv(Env):
 
 #setup
 if 'SUMO_HOME' in os.environ:
-     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
-     sys.path.append(tools)
+    tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
+    sys.path.append(tools)
 else:
-     sys.exit("please declare environment variable 'SUMO_HOME'")
+    sys.exit("please declare environment variable 'SUMO_HOME'")
 
 
 #init sumo simulation
@@ -238,9 +248,21 @@ detector_length = 50 #meters
 # ----------------------------------------------- RL ENVIROMENT START -----------------------------------------------
 
 env = SUMOEnv()
-
+print(env.observation_space)
 print(env.observation_space.sample(), env.action_space.sample())
-"""
+""""
+obs = env.reset()
+print("The initial observation is {}".format(obs))
+
+# Sample a random action from the entire action space
+random_action = env.action_space.sample()
+
+# # Take the action and get the new observation space
+new_obs, reward, done, info = env.step(random_action)
+
+# # Take the action and get the new observation space
+new_obs, reward, done, info = env.step(random_action)
+print("The new observation is {}".format(new_obs))
 
 episodes = 3
 for episode in range(1, episodes+1):
@@ -256,37 +278,26 @@ for episode in range(1, episodes+1):
     print('Episode:{} Score:{}'.format(episode, score))
 """
 
-# ----------------------------------------------- RL NOW WITH MODEL -----------------------------------------------
+    # ----------------------------------------------- RL NOW WITH MODEL -----------------------------------------------
 
 states = env.observation_space.shape
 actions = env.action_space.n
 
-def build_model(states, actions):
-    model = Sequential()    
-    model.add(Dense(24, activation='relu', input_shape=states))
-    model.add(Dense(24, activation='relu'))
-    model.add(Dense(actions, activation='linear'))
-    return model
-
-model = build_model(states, actions)
+model = rl_utils.build_model(states, actions)
 print(model.summary())
 
-def build_agent(model, actions):
-    policy = BoltzmannQPolicy()
-    memory = SequentialMemory(limit=50000, window_length=1)
-    dqn = DQNAgent(model=model, memory=memory, policy=policy, 
-                  nb_actions=actions, nb_steps_warmup=10, target_model_update=1e-2)
-    return dqn
-
-dqn = build_agent(model, actions)
+dqn = rl_utils.build_agent(model, actions)
 dqn.compile(Adam(lr=1e-3), metrics=['mae'])
-dqn.fit(env, nb_steps=50000, visualize=False, verbose=1)
-
-scores = dqn.test(env, nb_episodes=100, visualize=False)
-print(np.mean(scores.history['episode_reward']))
+dqn.fit(env, nb_steps=50000, visualize=False, verbose=1, log_interval=10000)
 
 dqn.save_weights('dqn_weights.h5f', overwrite=True)
+
+scores = dqn.test(env, nb_episodes=5, visualize=False)
+print(np.mean(scores.history['episode_reward']))
+
+
 
 
 #finally
 traci.close(False)
+
