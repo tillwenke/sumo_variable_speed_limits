@@ -15,10 +15,10 @@ from rl.agents import DQNAgent
 from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
 
-import rl_control
+import rl.rl_occ_control as rl_occ_control
 import rl_utils
 
-env = rl_control.SUMOEnv()
+env = rl_occ_control.SUMOEnv()
 actions = env.action_space.n
 states = env.observation_space.shape[0]
 model = rl_utils.build_model(states, actions)

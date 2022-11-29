@@ -20,14 +20,6 @@ import rl_utils
 
 max_speed = 150
 
-def linear_reward(x):
-    if 0 < x <= 105:
-        return x/105
-    elif 105 < x < 150:
-        return (150-x)/45
-    else:
-        return 0
-
 class SUMOEnv(Env):
     def __init__(self):
         # Actions we can take, down, stay, up
@@ -43,8 +35,8 @@ class SUMOEnv(Env):
         #run sumo simulation
         traci.start(sumoCmd)
 
-        #self.reward_func = scipy.stats.norm(105, 7.5).pdf
-        self.reward_func = linear_reward
+        #get 11% occ as best
+        self.reward_func = scipy.stats.norm(0.11, 0.01).pdf
         
     def step(self, action):
         # Apply action
@@ -81,9 +73,7 @@ class SUMOEnv(Env):
         """
 
         # let max reward be 1
-        #reward = self.reward_func(self.state_speed)*(1/0.05319230405352436)
-
-        reward = self.reward_func(self.state_speed)
+        reward = self.reward_func(self.state)/ 39.89422804014327
         
         # Check if shower is done
         if self.sim_length <= 0: 
@@ -175,7 +165,7 @@ class SUMOEnv(Env):
         # normalize the speed
         self.state = occupancy
         self.state_speed = mean_road_speed * 3.6  # m/s to km/h
-        print('>', action, self.state, self.state_speed, self.speed_limit, reward)
+        print('>', action, self.state, reward, self.speed_limit)
 
         # Set placeholder for info
         info = {}
