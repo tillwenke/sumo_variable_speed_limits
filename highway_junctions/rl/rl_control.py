@@ -7,6 +7,7 @@ from statistics import mean
 import traci
 from matplotlib import pyplot as plt
 import control_mechanisms
+import scipy.stats
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
@@ -33,6 +34,8 @@ class SUMOEnv(Env):
         # SUMO specific
         #run sumo simulation
         traci.start(sumoCmd)
+
+        self.reward_func = scipy.stats.norm(105, 7.5).pdf
         
     def step(self, action):
         # Apply action
@@ -59,10 +62,17 @@ class SUMOEnv(Env):
         # TODO define desired values
         # only depend on the mean speed not the occupancy [1]
         # account for normalized mean speed
+
+        # binary reward doesnt perform well
+        """
         if self.state_speed >=(90/max_speed) and self.state_speed <= (120/max_speed):
             reward = 1 
         else: 
             reward = -1 
+        """
+
+        # let max reward be 1
+        reward = self.reward_func(self.state_speed)*(1/0.05319230405352436)
         
         # Check if shower is done
         if self.sim_length <= 0: 
@@ -153,8 +163,8 @@ class SUMOEnv(Env):
         # gets the avg speed from the simulation
         # normalize the speed
         self.state = occupancy
-        self.state_speed = mean_road_speed * 3.6 / max_speed  # m/s to km/h
-        #print('>', self.state, self.state_speed * max_speed, self.speed_limit, '\n')
+        self.state_speed = mean_road_speed * 3.6  # m/s to km/h
+        print('>', self.action, self.state, self.state_speed, self.speed_limit)
 
         # Set placeholder for info
         info = {}
@@ -288,11 +298,11 @@ print(model.summary())
 
 dqn = rl_utils.build_agent(model, actions)
 dqn.compile(Adam(lr=1e-3), metrics=['mae'])
-dqn.fit(env, nb_steps=50000, visualize=False, verbose=1, log_interval=10000)
+dqn.fit(env, nb_steps=200000, visualize=False, verbose=1, log_interval=40000)
 
 dqn.save_weights('dqn_weights.h5f', overwrite=True)
 
-scores = dqn.test(env, nb_episodes=5, visualize=False)
+scores = dqn.test(env, nb_episodes=1000, visualize=False)
 print(np.mean(scores.history['episode_reward']))
 
 
