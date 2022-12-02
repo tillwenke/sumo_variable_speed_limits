@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 import control_mechanisms
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import Dense, Flatten, Input
 from tensorflow.keras.optimizers import Adam
 from rl.agents import DQNAgent
 from rl.policy import BoltzmannQPolicy
