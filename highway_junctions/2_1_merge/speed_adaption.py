@@ -48,6 +48,8 @@ segments_before = [seg_10_before, seg_9_before, seg_8_before, seg_7_before, seg_
 seg_0_after = ["seg_0_after_1", "seg_0_after_0"]
 seg_1_after = ["seg_1_after_1", "seg_1_after_0"]
 segments_after = [seg_0_after, seg_1_after]
+all_segments = segments_before + segments_after
+print(all_segments)
 
 low_speed = 15 # 50 km/h
 speed_max = 33.33 # 120 km/h
@@ -96,6 +98,11 @@ mean_speed = 0
 mean_edge_speed = np.zeros(len(edges)) # for each edge
 mean_road_speed = 0
 ms = [] # mean speeds
+
+cvs_seg_time = []
+for i in range(len(all_segments)):
+    cvs_seg_time.append([])
+print(cvs_seg_time)
 
 emissions = np.zeros(len(edges)) # for each edge
 emissions_over_time = [] # for each time step
@@ -150,7 +157,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         mean_speed_sum += mean_speed
 
     emission_sum = 0
-    for i, edge in enumerate(edges):
+    for i, edge in enumerate(edges):   
         mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
         emission_sum += traci.edge.getCO2Emission(edge)
     
@@ -195,6 +202,25 @@ while traci.simulation.getMinExpectedNumber() > 0:
         occupancy = occupancy_sum / aggregation_time
         occ.append(occupancy)
         num = num_sum / aggregation_time
+
+        # monitor the safety of road segments (CVS) - stores cvs value for each segment for each aggregation time step
+        for i, seg in enumerate(all_segments):
+            print(i, ':', seg)
+            cvs_sum = 0
+            for lane in seg:
+                # for cvs
+                ids = traci.lane.getLastStepVehicleIDs(lane)
+                speeds = []
+                for id in ids:
+                    speeds.append(traci.vehicle.getSpeed(id))
+                speeds = np.array(speeds)
+                lane_avg = np.mean(speeds)
+                lane_stdv = np.std(speeds)
+                cvs_sum += lane_stdv / lane_avg
+            cvs_seg = cvs_sum / len(seg)
+            if np.isnan(cvs_seg):
+                cvs_seg = 0
+            cvs_seg_time[i].append(cvs_seg)
         
         # CONTROL MECHANISM - VARIABLE SPEED LIMIT ALGORITHM
         # implementation of https://www.sciencedirect.com/science/article/pii/S0968090X07000873        
@@ -225,6 +251,9 @@ fig, ax = plt.subplots(1,1, figsize=(15,30))
 
 print("CO2",emissions)
 print('FLOW MAX',max(flw))
+print(type(cvs_seg_time[0][0]))
+print(cvs_seg_time[0][0])
+print(cvs_seg_time)
 
 
 plt.xticks(np.arange(min(occ), max(occ)+1, 1.0))
