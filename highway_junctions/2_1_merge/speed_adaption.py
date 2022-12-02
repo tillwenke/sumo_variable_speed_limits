@@ -98,6 +98,7 @@ mean_road_speed = 0
 ms = [] # mean speeds
 
 emissions = np.zeros(len(edges)) # for each edge
+emissions_over_time = [] # for each time step
 
 
 occupancy = 0 # highest anywhere in segment before merge
@@ -148,9 +149,12 @@ while traci.simulation.getMinExpectedNumber() > 0:
     if mean_speed >= 0:
         mean_speed_sum += mean_speed
 
+    emission_sum = 0
     for i, edge in enumerate(edges):
         mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
-        emissions[i] += traci.edge.getCO2Emission(edge)
+        emission_sum += traci.edge.getCO2Emission(edge)
+    
+    emissions_over_time.append(emission_sum)
     
 
     # BEFORE
@@ -227,6 +231,8 @@ plt.xticks(np.arange(min(occ), max(occ)+1, 1.0))
 plt.plot(occ, flw, 'bo')
 plt.show() 
 plt.plot(ms)
+plt.show()
+plt.plot(emissions_over_time)
 plt.show()
 
 traci.close()
