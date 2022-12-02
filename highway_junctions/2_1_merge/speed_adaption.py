@@ -234,5 +234,7 @@ plt.plot(ms)
 plt.show()
 plt.plot(emissions_over_time)
 plt.show()
+plt.plot(flw)
+plt.show()
 
 traci.close()
