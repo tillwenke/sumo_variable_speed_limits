@@ -103,6 +103,43 @@ def mcs(segments: list, default_max_speed: float, previous_harm_speeds: list):
 
     return harm_speeds
 
+def myround(x, base=5):
+    return int(base * round(x/base))
+
+def adjusted_mcs(segments: list, default_max_speed: float, previous_harm_speeds: list):
+
+    default_max_speed = default_max_speed*TO_KMPH
+
+    segments.reverse()
+    seg_iter = iter(segments)
+    segments = list(zip(seg_iter, seg_iter))
+
+    speed_limits = [default_max_speed]*len(segments)
+    harm_speeds = []
+
+    for i, (seg1, seg2) in enumerate(segments):
+        if i+2 == len(segments):
+            break
+
+        mean_speed = ((min_speed_for_segment(seg1) + min_speed_for_segment(seg2)) / 2)*TO_KMPH
+        if mean_speed < 45:
+            speed_limits[i]   = min(60, speed_limits[i])
+            speed_limits[i+1] = min(80, speed_limits[i+1])
+            speed_limits[i+2] = min(120, speed_limits[i+2])
+        else:
+            speed_limits[i]   = min(120, speed_limits[i])
+            speed_limits[i+1] = min(120, speed_limits[i+1])
+            speed_limits[i+2] = min(120, speed_limits[i+2])
+
+
+    for (seg1, seg2), limit in zip(segments, speed_limits):
+        for lane1, lane2 in zip(seg1, seg2):
+            traci.lane.setMaxSpeed(lane1, limit*TO_MPS)
+            traci.lane.setMaxSpeed(lane2, limit*TO_MPS)
+
+    print(speed_limits)
+
+    return harm_speeds
         
     """
     speed_limits = None
