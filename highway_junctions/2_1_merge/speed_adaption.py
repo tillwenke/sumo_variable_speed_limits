@@ -243,6 +243,14 @@ while traci.simulation.getMinExpectedNumber() > 0:
         occupancy_sum = 0
         num_sum = 0
 
+# Save metrics into csv file.
+approach = 'mcs2'
+with open(f'./metrics/{approach}_metrics.csv', 'w+') as metrics_file:
+    list_to_string = lambda x: ','.join([ str(elem) for elem in x ]) + '\n'
+    metrics_file.write(list_to_string(ms))
+    metrics_file.write(list_to_string(flw))
+    metrics_file.write(list_to_string(emissions_over_time))
+
 # plot occupancy and flow diagram to get capacity flow    
 fig, ax = plt.subplots(1,1, figsize=(15,30)) 
 #plt.xticks(np.arange(min(dens), max(dens)+1, 1.0))
