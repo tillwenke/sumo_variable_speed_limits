@@ -63,14 +63,14 @@ print(model.summary())
 
 dqn = rl_utils.build_agent(model, actions)
 dqn.compile(Adam(lr=1e-3), metrics=['mae'])
-dqn.fit(env, nb_steps=120, visualize=False, verbose=1, log_interval=120)
+dqn.fit(env, nb_steps=12000, visualize=False, verbose=1, log_interval=12000)
 
 plt.plot(env.mean_speeds)
 plt.show()
 
 dqn.save_weights('dqn_occ_weights.h5f', overwrite=True)
 
-scores = dqn.test(env, nb_episodes=3, visualize=False)
+scores = dqn.test(env, nb_episodes=1, visualize=False)
 print(np.mean(scores.history['episode_reward']))
 
 #finally

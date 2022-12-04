@@ -29,10 +29,32 @@ def linear_speed_reward(x):
         return 0
 
 def linear_occ_reward(x):
+    if 9 < x < 13:
+        return 2
+
     if 0 < x <= 11:
         return x/11
     elif 11 < x < 100:
         return (100-x)/89
+    else:
+        return 0
+
+def quad_speed_reward(x):
+    if 0 < x <= 50:
+        return 0
+    elif 50 < x <= 120:
+        return (x-50)**2/70**2
+    elif 120 < x < 150:
+        #return ((x-150)**2/30**2)
+        return 0
+    else:
+        return 0
+
+def quad_occ_reward(x):
+    if 0 < x <= 12:
+        return ((0.5 * x) + 6) / 12
+    elif 12 < x < 80:
+        return ((x-80)**2/68**2)
     else:
         return 0
 
@@ -52,7 +74,7 @@ class speed_SUMOEnv(Env):
         traci.start(sumoCmd)
 
         #self.reward_func = scipy.stats.norm(105, 7.5).pdf
-        self.reward_func = linear_speed_reward
+        self.reward_func = quad_speed_reward
 
         self.mean_speeds = []
         
@@ -93,7 +115,7 @@ class speed_SUMOEnv(Env):
         # let max reward be 1
         #reward = self.reward_func(self.state_speed)*(1/0.05319230405352436)
 
-        reward = self.reward_func(self.state_speed)
+        reward = self.reward_func(self.state)
         
         # Check if shower is done
         if self.sim_length <= 0: 
@@ -193,14 +215,17 @@ class speed_SUMOEnv(Env):
         info = {}
         
         # Return step information
-        self.state = self.sim_length
-        return self.state, reward, done, info
+        self.state = self.state_speed
+        return self.sim_length, reward, done, info
 
     def render(self):
         # Implement viz
         pass
     
     def reset(self):
+
+        self.mean_speeds = []
+
         # Reset params
         self.state = 0
         self.state_speed = 0
@@ -229,7 +254,7 @@ class occ_SUMOEnv(Env):
         traci.start(sumoCmd)
 
         #self.reward_func = scipy.stats.norm(105, 7.5).pdf
-        self.reward_func = linear_occ_reward
+        self.reward_func = quad_occ_reward
 
         self.mean_speeds = []
         
@@ -239,10 +264,12 @@ class occ_SUMOEnv(Env):
         # 1 -1 = 0 
         # 2 -1 = 1 
         self.speed_limit += (action - 1) * 10
+        '''
         if self.speed_limit > max_speed:
-            self.speed_limit = max_speed
-        if self.speed_limit < 50:
-            self.speed_limit = 50        
+            self.speed_limit = max_speed'''
+        if self.speed_limit < 10:
+            self.speed_limit = 10       
+        
 
         # copied from mtfc
         speed_new = self.speed_limit / 3.6 # km/h to m/s
@@ -369,7 +396,7 @@ class occ_SUMOEnv(Env):
         info = {}
         
         # Return step information
-        return self.sim_length, reward, done, info
+        return self.state, reward, done, info
 
     def render(self):
         # Implement viz
