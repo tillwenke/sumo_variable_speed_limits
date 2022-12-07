@@ -1,4 +1,6 @@
 from matplotlib import pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 data = {
     'baseline': {},
@@ -37,4 +39,16 @@ for title, metric in zip(titles, metrics):
     plt.legend(loc="upper left")
     plt.savefig(f'./{metric}_plot.png')
 
+# Plot heatmaps for safety metric.
+for approach in data.keys():
+    file_name = f'{approach}_cvs.csv'
 
+    try:
+        data = pd.read_csv(file_name, header=None)
+    except:
+        continue
+    
+    fig, axis = plt.subplots(figsize=(15,5))
+    axis = sns.heatmap(data, ax=axis)
+
+    fig.savefig(f'./{approach}_heatmap.png')
