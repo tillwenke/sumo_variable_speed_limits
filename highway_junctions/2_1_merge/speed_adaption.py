@@ -4,7 +4,7 @@ import traci
 import numpy as np
 from matplotlib import pyplot as plt
 import control_mechanisms
-
+import pandas as pd
 
 # from https://sumo.dlr.de/docs/TraCI/Interfacing_TraCI_from_Python.html
 
@@ -184,9 +184,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         # collected metrics are devided by the aggregation time to get the average values
         # OVERALL
         mean_edge_speed = mean_edge_speed / aggregation_time # first is acutally a sum
-        #print(mean_edge_speed)
         mean_road_speed = sum(mean_edge_speed) / len(mean_edge_speed)
-        #print(mean_road_speed)
         ms.append(mean_road_speed)
 
         # AFTER THE MERGE
@@ -229,7 +227,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
         #b = control_mechanisms.mtfc(occupancy, 12, b, speed_max, application_area)
         
-        previous_harm_speeds = control_mechanisms.mcs(segments_before, speed_max, previous_harm_speeds)
+        #previous_harm_speeds = control_mechanisms.adjusted_mcs(segments_before, speed_max, previous_harm_speeds)
 
         # reset accumulator
         veh_time_sum = 0
@@ -244,7 +242,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         num_sum = 0
 
 # Save metrics into csv file.
-approach = 'mcs2'
+approach = 'baseline'
 with open(f'./metrics/{approach}_metrics.csv', 'w+') as metrics_file:
     list_to_string = lambda x: ','.join([ str(elem) for elem in x ]) + '\n'
     metrics_file.write(list_to_string(ms))
@@ -262,6 +260,7 @@ print('FLOW MAX',max(flw))
 print(type(cvs_seg_time[0][0]))
 print(cvs_seg_time[0][0])
 print(cvs_seg_time)
+pd.DataFrame(cvs_seg_time).to_csv(f'./metrics/{approach}_cvs.csv', index=False, header=False)
 
 
 plt.xticks(np.arange(min(occ), max(occ)+1, 1.0))
