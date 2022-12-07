@@ -1,3 +1,5 @@
+# inspired by https://github.com/nicknochnack/OpenAI-Reinforcement-Learning-with-Custom-Environment
+
 from gym import Env
 from gym.spaces import Discrete, Box
 import numpy as np
@@ -257,6 +259,12 @@ class occ_SUMOEnv(Env):
         self.reward_func = quad_occ_reward
 
         self.mean_speeds = []
+        self.flows = []
+        self.emissions = []
+
+        self.cvs_seg_time = []
+        for i in range(len(all_segments)):
+            self.cvs_seg_time.append([])
         
     def step(self, action):
         # Apply action
@@ -310,6 +318,10 @@ class occ_SUMOEnv(Env):
         # the only relevant parameter until now
         mean_edge_speed = np.zeros(len(edges))
 
+        # set accumulators
+        veh_time_sum = 0
+        emission_sum = 0
+
         # simulate one step in SUMO to get new state
         aggregation_time = 30
         occupancy_sum = 0
@@ -322,7 +334,7 @@ class occ_SUMOEnv(Env):
 
             # AFTER
             #veh_space_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_after])
-            #veh_time_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_after])
+            veh_time_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_after])
 
             #mean_speed = sum([traci.inductionloop.getLastStepMeanSpeed(loop) for loop in loops_after]) / len(loops_after)
             # speed -1 indicated no vehicle on the loop
@@ -331,8 +343,8 @@ class occ_SUMOEnv(Env):
 
             for i, edge in enumerate(edges):
                 mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
-                #emissions[i] += traci.edge.getCO2Emission(edge)
-            
+                emission_sum += traci.edge.getCO2Emission(edge)
+            self.emissions.append(emission_sum)
 
             # BEFORE
             #veh_space_before_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_before])
@@ -347,7 +359,25 @@ class occ_SUMOEnv(Env):
 
             occupancy_sum += occ_max
             #num_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_before[0]]) # only at one sensor
-
+        
+        # monitor the safety of road segments (CVS) - stores cvs value for each segment for each aggregation time step
+        for i, seg in enumerate(all_segments):
+            print(i, ':', seg)
+            cvs_sum = 0
+            for lane in seg:
+                # for cvs
+                ids = traci.lane.getLastStepVehicleIDs(lane)
+                speeds = []
+                for id in ids:
+                    speeds.append(traci.vehicle.getSpeed(id))
+                speeds = np.array(speeds)
+                lane_avg = np.mean(speeds)
+                lane_stdv = np.std(speeds)
+                cvs_sum += lane_stdv / lane_avg
+            cvs_seg = cvs_sum / len(seg)
+            if np.isnan(cvs_seg):
+                cvs_seg = 0
+            self.cvs_seg_time[i].append(cvs_seg)
 
         # collected metrics are devided by the aggregation time to get the average values
         # OVERALL
@@ -360,8 +390,8 @@ class occ_SUMOEnv(Env):
 
         # AFTER THE MERGE
         #density = ((veh_space_sum / aggregation_time) / detector_length) * 1000
-        #flow = (veh_time_sum / aggregation_time) * 3600
-        #flw.append(flow)
+        flow = (veh_time_sum / aggregation_time) * 3600
+        self.flows.append(flow)
         #mean_speed = (mean_speed_sum / aggregation_time) * 3.6 # one speed metric is enough - equals to spot speed
 
         # BEFORE THE MERGE
@@ -459,6 +489,9 @@ segments_before = [seg_10_before, seg_9_before, seg_8_before, seg_7_before, seg_
 seg_0_after = ["seg_0_after_1", "seg_0_after_0"]
 seg_1_after = ["seg_1_after_1", "seg_1_after_0"]
 segments_after = [seg_0_after, seg_1_after]
+
+all_segments = segments_before + segments_after
+
 
 low_speed = 15 # 50 km/h
 speed_max = 33.33 # 120 km/h
