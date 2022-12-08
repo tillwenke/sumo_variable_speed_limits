@@ -36,7 +36,7 @@ with open(f'./metrics/{approach}_metrics.csv', 'w+') as metrics_file:
     list_to_string = lambda x: ','.join([ str(elem) for elem in x ]) + '\n'
     metrics_file.write(list_to_string(env.mean_speeds))
     metrics_file.write(list_to_string(env.flows))
-    metrics_file.write(list_to_string(env.emissions))
+    metrics_file.write(list_to_string(env.emissions_over_time))
 
 pd.DataFrame(env.cvs_seg_time).to_csv(f'./metrics/{approach}_cvs.csv', index=False, header=False)
 

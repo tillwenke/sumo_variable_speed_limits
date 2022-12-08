@@ -104,7 +104,6 @@ for i in range(len(all_segments)):
     cvs_seg_time.append([])
 print(cvs_seg_time)
 
-emissions = np.zeros(len(edges)) # for each edge
 emissions_over_time = [] # for each time step
 
 
@@ -148,7 +147,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
     # for some it is important to average over the number of lanes on the edge
 
     # AFTER
-    veh_space_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_after])
+    #veh_space_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_after])
     veh_time_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_after])
 
     mean_speed = sum([traci.inductionloop.getLastStepMeanSpeed(loop) for loop in loops_after]) / len(loops_after)
@@ -165,7 +164,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
     
 
     # BEFORE
-    veh_space_before_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_before])
+    #veh_space_before_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_before])
 
     # collecting the number of vehicles and occupancy right in front (or even in) of the merge area
     # choose max occupancy of a few sensors
@@ -188,13 +187,13 @@ while traci.simulation.getMinExpectedNumber() > 0:
         ms.append(mean_road_speed)
 
         # AFTER THE MERGE
-        density = ((veh_space_sum / aggregation_time) / detector_length) * 1000
+        #density = ((veh_space_sum / aggregation_time) / detector_length) * 1000
         flow = (veh_time_sum / aggregation_time) * 3600
         flw.append(flow)
         mean_speed = (mean_speed_sum / aggregation_time) * 3.6 # one speed metric is enough - equals to spot speed
 
         # BEFORE THE MERGE
-        density_before = ((veh_space_before_sum / aggregation_time) / detector_length) * 1000
+        #density_before = ((veh_space_before_sum / aggregation_time) / detector_length) * 1000
         dens.append(density_before)
 
         occupancy = occupancy_sum / aggregation_time
@@ -227,7 +226,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
         #b = control_mechanisms.mtfc(occupancy, 12, b, speed_max, application_area)
         
-        #previous_harm_speeds = control_mechanisms.adjusted_mcs(segments_before, speed_max, previous_harm_speeds)
+        previous_harm_speeds = control_mechanisms.adjusted_mcs(segments_before, speed_max, previous_harm_speeds)
 
         # reset accumulator
         veh_time_sum = 0
@@ -255,7 +254,7 @@ fig, ax = plt.subplots(1,1, figsize=(15,30))
 #plt.plot(dens, flw, 'bo', )
 #plt.show()
 
-print("CO2",emissions)
+print("CO2",emissions_over_time)
 print('FLOW MAX',max(flw))
 print(type(cvs_seg_time[0][0]))
 print(cvs_seg_time[0][0])

@@ -9,6 +9,7 @@
         <net-file value="./2_1_merge.net.xml"/>
         <route-files value="./improved_2_1_merge.rou.xml"/>
         <additional-files value="./additional.xml"/>
+        <gui-settings-file value="view.view.xml"/>
     </input>
     <emissions>
 		<phemlight-path value="SUMO_HOME\data\emissions\PHEMlight>" />
@@ -18,3 +19,4 @@
     </emissions>
 
 </configuration>
+ 

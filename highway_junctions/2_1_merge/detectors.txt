@@ -1,0 +1,6 @@
+    <laneAreaDetector id="detector_seg_0_before_2" lane="seg_0_before_2" pos="-275" length="275" period="1" file="inductive_loop_metrics.xml"/>
+    <laneAreaDetector id="detector_seg_0_before_1" lane="seg_0_before_1" pos="-275" length="275" period="1" file="inductive_loop_metrics.xml"/>
+    <laneAreaDetector id="detector_seg_0_before_0" lane="seg_0_before_0" pos="-275" length="275" period="1" file="inductive_loop_metrics.xml"/>
+
+    <laneAreaDetector id="detector_seg_0_after_1" lane="seg_0_after_1" pos="50" length="50" period="1" file="inductive_loop_metrics.xml"/>
+    <laneAreaDetector id="detector_seg_0_after_0" lane="seg_0_after_0" pos="50" length="50" period="1" file="inductive_loop_metrics.xml"/>

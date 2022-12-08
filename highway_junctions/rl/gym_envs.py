@@ -260,7 +260,8 @@ class occ_SUMOEnv(Env):
 
         self.mean_speeds = []
         self.flows = []
-        self.emissions = []
+
+        self.emissions_over_time = []
 
         self.cvs_seg_time = []
         for i in range(len(all_segments)):
@@ -320,7 +321,7 @@ class occ_SUMOEnv(Env):
 
         # set accumulators
         veh_time_sum = 0
-        emission_sum = 0
+        
 
         # simulate one step in SUMO to get new state
         aggregation_time = 30
@@ -341,10 +342,11 @@ class occ_SUMOEnv(Env):
             #if mean_speed >= 0:
                 #mean_speed_sum += mean_speed
 
+            emission_sum = 0
             for i, edge in enumerate(edges):
                 mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
                 emission_sum += traci.edge.getCO2Emission(edge)
-            self.emissions.append(emission_sum)
+            self.emissions_over_time.append(emission_sum)
 
             # BEFORE
             #veh_space_before_sum += sum([traci.lanearea.getLastStepVehicleNumber(detector) for detector in detectors_before])
