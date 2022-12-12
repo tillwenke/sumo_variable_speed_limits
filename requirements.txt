@@ -1,0 +1,7 @@
+tensorflow
+pandas
+numpy
+matplotlib
+gym
+statistics
+traci

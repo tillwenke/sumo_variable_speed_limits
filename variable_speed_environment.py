@@ -1,11 +1,10 @@
-import os, sys
 from statistics import mean
 import traci
 import numpy as np
 from matplotlib import pyplot as plt
-import control_algorithms
 import pandas as pd
 
+import control_algorithms
 from simulation_utilities.road import *
 from simulation_utilities.setup import *
 

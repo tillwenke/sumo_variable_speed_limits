@@ -5,10 +5,10 @@ from statistics import mean
 from matplotlib import pyplot as plt
 import pandas as pd
 
-import rl_utilities.rl_gym_environments as rl_gym_environments
+from rl_utilities.rl_gym_environments import *
 from rl_utilities.model import *
 
-env = rl_gym_environments.SUMOEnv()
+env = SUMOEnv()
 actions = env.action_space.n
 states = env.observation_space.shape
 model = build_model(states, actions)

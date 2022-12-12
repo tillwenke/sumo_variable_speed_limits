@@ -1,23 +1,22 @@
 # SUMO Traffic Simulation
-Project repository for Intelligent Transportation Systems course. 
+Project repository for Intelligent Transportation Systems course in Fall 2022 at University of Tartu.
+You can find a 3 to 2 lane merge scenario on a highway and differnent approaches to resolve emerging congestions including reinforment learning.
 
-## Scenarios
-- Lane merging onto highway.
+# Getting started
+Embed the cloned project in a [PyVenv](https://docs.python.org/3/library/venv.html) (or conda env if you prefer) and install the requiremnts listed in requirements.txt
 
-## Tasks
-- [ ] Different types of vehicles and sizes. Using [Autobahn tutorial](https://sumo.dlr.de/docs/Tutorials/Autobahn.html). handling autobahn better via python (**Jure**)
-- [ ] Traffic contraints that prevent cars to drive onto extra right lane. (**Robin**)
-- [ ] algo approaches (**Daria**)
-- [ ] Density measurements -> get along with metrics(**Till**)
-- [ ] Visualisation of cars. Color of car depending on the inflow.
+And get yourself the [SUMO traffic simulation](https://www.eclipse.org/sumo/).
 
+# Launching the different approaches
 
-## Meet
+Differnt traditional algorithmic approaches can be found in *control_algotihms.py* which can be applied to the scenario by setting `approach=` in *variable_speed_environment.py* and running it.
 
-On 21st Oct
-- Jure took a look into "autobahn" = create a realistic traffic 
-- Till tried to caputure metrics with inductive loop - but retrieving it via python is a little flawed
+A try to solve the congestion problem with reinforcement learning can be found in the custom OpenAI Gym-environment in *rl_utils/rl_gym_environments*. Models can be trained using *rl_learn.py* - pre-trained models are provided under *rl_models/*. Their outcome can be assessed running *rl_test.py*.
 
-## Future
+# Investigation outcomes via metrics
 
-- define measures of good traffic (also in http://vti.diva-portal.org/smash/get/diva2:794891/FULLTEXT01.pdf)
+Unfortunatelly no algorithm convincingly resolved the congestion so eye-test cannot be used to assess their achievements. Run algorithmns store their metrics in *metrics/* - most importantly the mean speed of cars over the whole stretch of the road. To combine the metrics of differnet approaches visually run *metrics/combine.py*.
+
+## Credits
+
+To Ellen Grumert - partially you can find implementations in the SUMO simulation that have been described in  [her work](http://vti.diva-portal.org/smash/get/diva2:794891/FULLTEXT01.pdf)).
