@@ -364,7 +364,6 @@ class occ_SUMOEnv(Env):
         
         # monitor the safety of road segments (CVS) - stores cvs value for each segment for each aggregation time step
         for i, seg in enumerate(all_segments):
-            print(i, ':', seg)
             cvs_sum = 0
             for lane in seg:
                 # for cvs
