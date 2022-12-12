@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 TO_MPS = 5/18
 TO_KMPH = 18/5
 
+# implementation of https://www.sciencedirect.com/science/article/pii/S0968090X07000873
 def lecture_mechanism(occupancy_desired, occupancy_old, flow_old, road_segments):
     # occupancy_desired from plot experiments
     K_r = 25 # mu veh/h/%

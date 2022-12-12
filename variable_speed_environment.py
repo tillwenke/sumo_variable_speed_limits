@@ -6,88 +6,20 @@ from matplotlib import pyplot as plt
 import control_algorithms
 import pandas as pd
 
-# from https://sumo.dlr.de/docs/TraCI/Interfacing_TraCI_from_Python.html
+from simulation_utilities.road import *
+from simulation_utilities.setup import *
 
-#setup
-if 'SUMO_HOME' in os.environ:
-     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
-     sys.path.append(tools)
-else:
-     sys.exit("please declare environment variable 'SUMO_HOME'")
-
-
-#init sumo simulation
-# -d, --delay FLOAT  Use FLOAT in ms as delay between simulation steps
-executable = 'sumo-gui.exe' if os.name == 'nt' else 'sumo-gui'
-sumoBinary = os.path.join(os.environ['SUMO_HOME'], 'bin', executable)
-sumoCmd = [sumoBinary, "-c", "sumo/3_2_merge.sumocfg", '--start']
+# set the algorithm to be used
+# baseline, mtfc, mcs
+approach = 'baseline'
 
 #run sumo simulation
 traci.start(sumoCmd)
 
 # ----------------------------------------------- VARIABLE SETTING -----------------------------------------------
 
-edges = ["seg_10_before","seg_9_before","seg_8_before","seg_7_before","seg_6_before","seg_5_before","seg_4_before","seg_3_before","seg_2_before","seg_1_before","seg_0_before","seg_0_after","seg_1_after"]
-
-# LANES & MAXIMUM SPEEDS
-# naming:
-# laneSEGment_"number, 0 means closest to merge zone"_"before or after the merge"_"lane number counting from bottom to top"
-seg_10_before = ["seg_10_before_2", "seg_10_before_1", "seg_10_before_0"]
-seg_9_before = ["seg_9_before_2", "seg_9_before_1", "seg_9_before_0"]
-seg_8_before = ["seg_8_before_2", "seg_8_before_1", "seg_8_before_0"]
-seg_7_before = ["seg_7_before_2", "seg_7_before_1", "seg_7_before_0"]
-seg_6_before = ["seg_0_before_2", "seg_6_before_1", "seg_6_before_0"]
-seg_5_before = ["seg_5_before_2", "seg_5_before_1", "seg_5_before_0"]
-seg_4_before = ["seg_4_before_2", "seg_4_before_1", "seg_4_before_0"]
-seg_3_before = ["seg_3_before_2", "seg_3_before_1", "seg_3_before_0"]
-seg_2_before = ["seg_2_before_2", "seg_2_before_1", "seg_2_before_0"]
-seg_1_before = ["seg_1_before_2", "seg_1_before_1", "seg_1_before_0"]
-seg_0_before = ["seg_0_before_2", "seg_0_before_1", "seg_0_before_0"]
-segments_before = [seg_10_before, seg_9_before, seg_8_before, seg_7_before, seg_6_before, seg_5_before, seg_4_before, seg_3_before, seg_2_before, seg_1_before, seg_0_before]
-
-seg_0_after = ["seg_0_after_1", "seg_0_after_0"]
-seg_1_after = ["seg_1_after_1", "seg_1_after_0"]
-segments_after = [seg_0_after, seg_1_after]
-all_segments = segments_before + segments_after
-print(all_segments)
-
 low_speed = 15 # 50 km/h
 speed_max = 33.33 # 120 km/h
-
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_10_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_9_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_8_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_7_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_6_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_5_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_4_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_3_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_2_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_1_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_0_before]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_0_after]
-[traci.lane.setMaxSpeed(lane, speed_max) for lane in seg_1_after]
-
-
-# ROAD SENSORS / INDUCTION LOOPS
-# defined in additional.xml
-# naming:
-# equal to lanes
-# keeping to the sumo objects used
-# loop = induction loop ... for measurements at a point
-# detector = lane are detector ... for measurements along a lane
-
-loops_beforeA = ["loop_seg_0_before_2A", "loop_seg_0_before_1A", "loop_seg_0_before_0A"]
-loops_beforeB = ["loop_seg_0_before_2B", "loop_seg_0_before_1B", "loop_seg_0_before_0B"]
-loops_beforeC = ["loop_seg_0_before_2C", "loop_seg_0_before_1C", "loop_seg_0_before_0C"]
-loops_beforeD = ["loop_seg_0_before_2D", "loop_seg_0_before_1D", "loop_seg_0_before_0D"]
-loops_before = [loops_beforeA, loops_beforeB, loops_beforeC, loops_beforeD]
-detectors_before = ["detector_seg_0_before_2", "detector_seg_0_before_1", "detector_seg_0_before_0"]
-
-loops_after = ["loop_seg_0_after_1", "loop_seg_0_after_0"]
-detectors_after = ["detector_seg_0_after_1", "detector_seg_0_after_0"]
-
-detector_length = 50 #meters
 
 # INTRODUCE METRICS
 density = 0
@@ -220,14 +152,14 @@ while traci.simulation.getMinExpectedNumber() > 0:
                 cvs_seg = 0
             cvs_seg_time[i].append(cvs_seg)
         
-        # CONTROL MECHANISM - VARIABLE SPEED LIMIT ALGORITHM
-        # implementation of https://www.sciencedirect.com/science/article/pii/S0968090X07000873        
-        
-        #control_mechanisms.lecture_mechanism(occupancy_desired=11, occupancy_old=occupancy, flow_old=flow, road_segments=segments_before[:10])  
+        # CONTROL MECHANISM - VARIABLE SPEED LIMIT ALGORITHM    
 
-        #b = control_mechanisms.mtfc(occupancy, 12, b, speed_max, application_area)
-        
-        #previous_harm_speeds = control_mechanisms.adjusted_mcs(segments_before, speed_max, previous_harm_speeds)
+        if approach == 'mtfc':
+            b = control_algorithms.mtfc(occupancy, 12, b, speed_max, application_area)
+        elif approach == 'mcs':
+            previous_harm_speeds = control_algorithms.adjusted_mcs(segments_before, speed_max, previous_harm_speeds)
+        else:
+            pass        
 
         # reset accumulator
         veh_time_sum = 0
@@ -242,7 +174,6 @@ while traci.simulation.getMinExpectedNumber() > 0:
         num_sum = 0
 
 # Save metrics into csv file.
-approach = 'baseline'
 with open(f'./metrics/{approach}_metrics.csv', 'w+') as metrics_file:
     list_to_string = lambda x: ','.join([ str(elem) for elem in x ]) + '\n'
     metrics_file.write(list_to_string(ms))
@@ -251,21 +182,13 @@ with open(f'./metrics/{approach}_metrics.csv', 'w+') as metrics_file:
 
 # plot occupancy and flow diagram to get capacity flow    
 fig, ax = plt.subplots(1,1, figsize=(15,30)) 
-#plt.xticks(np.arange(min(dens), max(dens)+1, 1.0))
-#plt.plot(dens, flw, 'bo', )
-#plt.show()
-
-print("CO2",emissions)
-print('FLOW MAX',max(flw))
-print(type(cvs_seg_time[0][0]))
-print(cvs_seg_time[0][0])
-print(cvs_seg_time)
-pd.DataFrame(cvs_seg_time).to_csv(f'./metrics/{approach}_cvs.csv', index=False, header=False)
-
-
 plt.xticks(np.arange(min(occ), max(occ)+1, 1.0))
 plt.plot(occ, flw, 'bo')
 plt.show() 
+
+pd.DataFrame(cvs_seg_time).to_csv(f'./metrics/{approach}_cvs.csv', index=False, header=False)
+
+# plot other metrics
 plt.plot(ms)
 plt.show()
 plt.plot(emissions_over_time)
