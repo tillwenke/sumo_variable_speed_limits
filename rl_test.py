@@ -1,25 +1,14 @@
 from gym import Env
 from gym.spaces import Discrete, Box
 import numpy as np
-import random
-import os, sys
 from statistics import mean
-import traci
 from matplotlib import pyplot as plt
-import control_algorithms
 import pandas as pd
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten
-from tensorflow.keras.optimizers import Adam
-from rl.agents import DQNAgent
-from rl.policy import BoltzmannQPolicy
-from rl.memory import SequentialMemory
-
-import gym_envs
+import rl_utilities.rl_gym_environments as rl_gym_environments
 from rl_utilities.model import *
 
-env = gym_envs.SUMOEnv()
+env = rl_gym_environments.SUMOEnv()
 actions = env.action_space.n
 states = env.observation_space.shape
 model = build_model(states, actions)
