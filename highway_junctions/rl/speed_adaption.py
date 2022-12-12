@@ -3,7 +3,7 @@ from statistics import mean
 import traci
 import numpy as np
 from matplotlib import pyplot as plt
-import control_mechanisms
+import control_algorithms
 
 
 # from https://sumo.dlr.de/docs/TraCI/Interfacing_TraCI_from_Python.html

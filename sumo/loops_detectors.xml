@@ -1,0 +1,28 @@
+<additional>        
+    <laneAreaDetector id="detector_seg_0_after_1" lane="seg_0_after_1" pos="50" length="50" period="1" file="loop_detector_metrics.xml"/>
+    <laneAreaDetector id="detector_seg_0_after_0" lane="seg_0_after_0" pos="50" length="50" period="1" file="loop_detector_metrics.xml"/>
+    
+    <inductionLoop id="loop_seg_0_after_1" lane="seg_0_after_1" pos="50" period="1" file="loop_detector_metrics.xml"/>
+    <inductionLoop id="loop_seg_0_after_0" lane="seg_0_after_0" pos="50" period="1" file="loop_detector_metrics.xml"/>       
+
+    <laneAreaDetector id="detector_seg_0_before_2" lane="seg_0_before_2" pos="-275" length="275" period="1" file="loop_detector_metrics.xml"/>
+    <laneAreaDetector id="detector_seg_0_before_1" lane="seg_0_before_1" pos="-275" length="275" period="1" file="loop_detector_metrics.xml"/>
+    <laneAreaDetector id="detector_seg_0_before_0" lane="seg_0_before_0" pos="-275" length="275" period="1" file="loop_detector_metrics.xml"/>
+
+    <inductionLoop id="loop_seg_0_before_2A" lane="seg_0_before_2" pos="-1" period="1" file="loop_detector_metrics.xml"/> 
+    <inductionLoop id="loop_seg_0_before_1A" lane="seg_0_before_1" pos="-1" period="1" file="loop_detector_metrics.xml"/>
+    <inductionLoop id="loop_seg_0_before_0A" lane="seg_0_before_0" pos="-1" period="1"  file="loop_detector_metrics.xml"/> 
+
+    <inductionLoop id="loop_seg_0_before_2B" lane="seg_0_before_2" pos="-100" period="1" file="loop_detector_metrics.xml"/> 
+    <inductionLoop id="loop_seg_0_before_1B" lane="seg_0_before_1" pos="-100" period="1" file="loop_detector_metrics.xml"/>
+    <inductionLoop id="loop_seg_0_before_0B" lane="seg_0_before_0" pos="-100" period="1"  file="loop_detector_metrics.xml"/> 
+    
+    <inductionLoop id="loop_seg_0_before_2C" lane="seg_0_before_2" pos="-200" period="1" file="loop_detector_metrics.xml"/> 
+    <inductionLoop id="loop_seg_0_before_1C" lane="seg_0_before_1" pos="-200" period="1" file="loop_detector_metrics.xml"/>
+    <inductionLoop id="loop_seg_0_before_0C" lane="seg_0_before_0" pos="-200" period="1"  file="loop_detector_metrics.xml"/> 
+
+    <inductionLoop id="loop_seg_0_before_2D" lane="seg_0_before_2" pos="-275" period="1" file="loop_detector_metrics.xml"/> 
+    <inductionLoop id="loop_seg_0_before_1D" lane="seg_0_before_1" pos="-275" period="1" file="loop_detector_metrics.xml"/>
+    <inductionLoop id="loop_seg_0_before_0D" lane="seg_0_before_0" pos="-275" period="1"  file="loop_detector_metrics.xml"/> 
+
+</additional>
