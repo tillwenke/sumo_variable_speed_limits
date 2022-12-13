@@ -1,6 +1,0 @@
-<routes>
-    <vType id="normal_car" vClass="passenger" maxSpeed="40" speedFactor="0.9" speedDev="0.2" sigma="0.5" />
-    <route id="highway" edges="entry long_edge exit"/>
-    <!--<flow id="normal_flow" type="normal_car" vehsPerHour="500" begin="0" end="5000" from="entry" to="exit" departSpeed="avg" departLane="best" />
-    -->
-</routes>

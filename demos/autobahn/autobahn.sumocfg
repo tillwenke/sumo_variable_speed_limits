@@ -1,7 +1,0 @@
-<configuration>
-   <input>
-       <net-file value="autobahn.net.xml"/>
-       <route-files value="autobahn.rou.xml"/>
-       <gui-settings-file value="autobahn.view.xml"/>
-   </input>
-</configuration>
