@@ -21,7 +21,9 @@ class SUMOEnv(Env):
         self.state = 0 # occupancy
         self.speed_limit = 120 # to be changed actively
         # Set simulation length
-        self.sim_length = 120 # 30 x 120 = 3600 steps
+        self.aggregation_time = 30
+        self.sim_length = 3600/self.aggregation_time # 30 x 120 = 3600 steps        
+
         # SUMO specific
         #run sumo simulation
         traci.start(sumoCmd)
@@ -78,10 +80,9 @@ class SUMOEnv(Env):
         veh_time_sum = 0        
 
         # simulate one step in SUMO to get new state
-        aggregation_time = 30
         occupancy_sum = 0
 
-        for i in range(aggregation_time):
+        for i in range(self.aggregation_time):
             traci.simulationStep() 
                     
             # GATHER METRICS FROM SENSORS    
@@ -128,15 +129,15 @@ class SUMOEnv(Env):
 
         # collected metrics are devided by the aggregation time to get the average values
         # OVERALL
-        mean_edge_speed = mean_edge_speed / aggregation_time # first is acutally a sum
+        mean_edge_speed = mean_edge_speed / self.aggregation_time # first is acutally a sum
         mean_road_speed = sum(mean_edge_speed) / len(mean_edge_speed)
         self.mean_speeds.append(mean_road_speed) 
 
         # AFTER THE MERGE
-        flow = (veh_time_sum / aggregation_time) * 3600
+        flow = (veh_time_sum / self.aggregation_time) * 3600
         self.flows.append(flow)     
 
-        occupancy = occupancy_sum / aggregation_time      
+        occupancy = occupancy_sum / self.aggregation_time      
 
         # ------------------------------ SUMO ------------------------------
         

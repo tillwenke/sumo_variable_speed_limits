@@ -9,6 +9,8 @@ And get yourself the [SUMO traffic simulation](https://www.eclipse.org/sumo/).
 
 # Launching the different approaches
 
+New speed limits are calculated/ set every 30 s in order to change it change *aggregation_time* in the respective files.
+
 Differnt traditional algorithmic approaches can be found in *control_algotihms.py* which can be applied to the scenario by setting `approach=` in *variable_speed_environment.py* and running it.
 
 A try to solve the congestion problem with reinforcement learning can be found in the custom OpenAI Gym-environment in *rl_utils/rl_gym_environments*. Models can be trained using *rl_learn.py* - pre-trained models are provided under *rl_models/*. Their outcome can be assessed running *rl_test.py*.
