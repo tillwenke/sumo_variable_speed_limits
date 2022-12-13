@@ -5,3 +5,4 @@ matplotlib
 gym
 statistics
 traci
+keras-rl
