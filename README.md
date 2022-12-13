@@ -19,4 +19,4 @@ Unfortunatelly no algorithm convincingly resolved the congestion so eye-test can
 
 ## Credits
 
-To Ellen Grumert - partially you can find implementations in the SUMO simulation that have been described in  [her work](http://vti.diva-portal.org/smash/get/diva2:794891/FULLTEXT01.pdf)).
+To Ellen Grumert - partially you can find implementations in the SUMO simulation that have been described in  [her work](http://vti.diva-portal.org/smash/get/diva2:794891/FULLTEXT01.pdf).
