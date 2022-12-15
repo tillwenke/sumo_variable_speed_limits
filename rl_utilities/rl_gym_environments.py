@@ -148,6 +148,7 @@ class SUMOEnv(Env):
 
         # Set placeholder for info
         info = {}
+        print(">", self.state, self.state_speed, self.speed_limit, reward, done)
         
         # Return step information
         return self.state, reward, done, info
@@ -164,7 +165,7 @@ class SUMOEnv(Env):
         self.state_speed = 0
         self.speed_limit = 120
         # Reset time
-        self.sim_length = 120
+        self.sim_length = 3600/self.aggregation_time
 
         # Reset SUMO
         traci.close(False)
