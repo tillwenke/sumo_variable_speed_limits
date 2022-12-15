@@ -1,5 +1,3 @@
-import traci
-
 edges = ["seg_10_before","seg_9_before","seg_8_before","seg_7_before","seg_6_before","seg_5_before","seg_4_before","seg_3_before","seg_2_before","seg_1_before","seg_0_before","seg_0_after","seg_1_after"]
 
 # LANES & MAXIMUM SPEEDS

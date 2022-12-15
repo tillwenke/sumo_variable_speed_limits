@@ -6,7 +6,7 @@ import traci
 from matplotlib import pyplot as plt
 
 from rl_utilities.model import *
-from rl_utilities.rl_gym_environments import *
+from rl_gym_environments import *
 
 # ----------------------------------------------- RL ENVIROMENT START -----------------------------------------------
 

@@ -5,7 +5,7 @@ from statistics import mean
 from matplotlib import pyplot as plt
 import pandas as pd
 
-from rl_utilities.rl_gym_environments import *
+from rl_gym_environments import *
 from rl_utilities.model import *
 
 env = SUMOEnv()
