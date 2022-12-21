@@ -148,7 +148,6 @@ class SUMOEnv(Env):
 
         # Set placeholder for info
         info = {}
-        print(">", self.state, self.state_speed, self.speed_limit, reward, done)
         
         # Return step information
         return self.state, reward, done, info

@@ -10,7 +10,7 @@ from simulation_utilities.setup import *
 
 # set the algorithm to be used
 # baseline, mtfc, mcs
-approach = 'baseline'
+approach = 'mcs'
 
 #run sumo simulation
 traci.start(sumoCmd)
@@ -33,7 +33,6 @@ ms = [] # mean speeds
 cvs_seg_time = []
 for i in range(len(all_segments)):
     cvs_seg_time.append([])
-print(cvs_seg_time)
 
 emissions = np.zeros(len(edges)) # for each edge
 emissions_over_time = [] # for each time step
@@ -61,7 +60,6 @@ flw = []
 #mtfc
 b = 1.0
 application_area = segments_before[9:10]
-print(application_area)
 
 # SIMULATION PARAMETERS
 step = 0
@@ -134,7 +132,6 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
         # monitor the safety of road segments (CVS) - stores cvs value for each segment for each aggregation time step
         for i, seg in enumerate(all_segments):
-            print(i, ':', seg)
             cvs_sum = 0
             for lane in seg:
                 # for cvs
@@ -154,7 +151,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         # CONTROL MECHANISM - VARIABLE SPEED LIMIT ALGORITHM    
 
         if approach == 'mtfc':
-            b = control_algorithms.mtfc(occupancy, 12, b, speed_max, application_area)
+            b = control_algorithms.mtfc(occupancy, 11, b, speed_max, application_area)
         elif approach == 'mcs':
             previous_harm_speeds = control_algorithms.adjusted_mcs(segments_before, speed_max, previous_harm_speeds)
         else:
