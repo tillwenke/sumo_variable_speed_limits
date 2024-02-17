@@ -2,7 +2,7 @@
 
 Project repository for Intelligent Transportation Systems course in Fall 2022 at University of Tartu.
 You can find a 3 to 2 lane merge scenario on a highway and differnent approaches to resolve emerging congestions including *reinforcment learning* and classical *rule-based* approaches.
-In order to learn about our outcome you can read "ITS_Report-VSL.pdf".
+In order to learn about our outcome you can read `ITS_Report-VSL.pdf`.
 
 # Getting started
 Embed the cloned project in a [PyVenv](https://docs.python.org/3/library/venv.html) (or conda env if you prefer) and install the requiremnts listed in requirements.txt
