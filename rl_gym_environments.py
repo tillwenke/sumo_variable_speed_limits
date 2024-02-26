@@ -35,7 +35,9 @@ class SUMOEnv(Env):
 
         #self.reward_func = scipy.stats.norm(105, 7.5).pdf
         self.reward_func = quad_occ_reward
-
+# This file defines custom Gym environments for reinforcement learning models to interact with simulated traffic scenarios using SUMO.
+# These environments simulate various traffic conditions and evaluate the performance of different traffic management strategies implemented by reinforcement learning agents.
+# The goal is to optimize traffic flow, reduce congestion, and minimize environmental impact through intelligent traffic management.
         self.mean_speeds = []
         self.flows = []
 
