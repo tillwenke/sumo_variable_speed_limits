@@ -87,6 +87,8 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
     emission_sum = 0
     for i, edge in enumerate(edges):   
+    # Vehicle space and time sums are crucial for calculating traffic density and flow, respectively. These metrics provide insights into the current traffic conditions, helping to optimize traffic flow and reduce congestion.
+    # Mean speed calculation is essential for understanding the average speed of vehicles on the road. This metric is used to assess the efficiency of traffic flow and identify potential bottlenecks or areas of improvement.
         mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
         emission_sum += traci.edge.getCO2Emission(edge)
     
@@ -104,6 +106,8 @@ while traci.simulation.getMinExpectedNumber() > 0:
         if occ_loop > occ_max:
             occ_max = occ_loop
 
+    occupancy_sum += occ_max
+    # Emissions tracking is vital for evaluating the environmental impact of traffic. By monitoring CO2 emissions, the model aims to identify strategies that not only optimize traffic flow but also minimize environmental harm. This aligns with the broader objective of sustainable traffic management.
     occupancy_sum += occ_max
     num_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_before[0]]) # only at one sensor
     
