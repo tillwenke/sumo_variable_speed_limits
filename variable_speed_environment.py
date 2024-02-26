@@ -87,6 +87,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
 
     emission_sum = 0
     for i, edge in enumerate(edges):   
+# Averaging the speed of vehicles from sensors after the merge area is significant as it provides a measure of traffic flow efficiency. This metric influences the reinforcement learning model's decisions by highlighting areas where speed adjustments could improve overall traffic conditions.
         mean_edge_speed[i] += traci.edge.getLastStepMeanSpeed(edge)
         emission_sum += traci.edge.getCO2Emission(edge)
     
@@ -107,6 +108,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
     occupancy_sum += occ_max
     num_sum += sum([traci.inductionloop.getLastStepVehicleNumber(loop) for loop in loops_before[0]]) # only at one sensor
     
+# This loop continues the simulation until all vehicles have exited the network, which is crucial for evaluating the performance of the reinforcement learning model over an entire episode.
     # EVALUATE THE METRICS FREQUENTLY AND USE TO ADJUST VARIABLE SPEED LIMITS
     if step % aggregation_time == 0:
 
@@ -125,6 +127,7 @@ while traci.simulation.getMinExpectedNumber() > 0:
         # BEFORE THE MERGE
         density_before = ((veh_space_before_sum / aggregation_time) / detector_length) * 1000
         dens.append(density_before)
+# Collecting the maximum occupancy from sensors before the merge area is important for the reinforcement learning model to understand congestion levels. High occupancy indicates potential bottlenecks, guiding the model to adjust speed limits to alleviate congestion and improve traffic flow.
 
         occupancy = occupancy_sum / aggregation_time
         occ.append(occupancy)

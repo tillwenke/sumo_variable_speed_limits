@@ -1,3 +1,7 @@
+# This file defines the SUMOEnv class, which is a custom environment for reinforcement learning in traffic management simulations.
+# The environment is built on top of the OpenAI Gym interface, allowing for the integration of various reinforcement learning models.
+# It interfaces with the Simulation of Urban MObility (SUMO) through the "traci" interface to simulate traffic scenarios and control traffic lights or speed limits.
+# This environment is crucial for setting up and evaluating reinforcement learning models aimed at optimizing traffic flow and reducing congestion.
 # inspired by https://github.com/nicknochnack/OpenAI-Reinforcement-Learning-with-Custom-Environment
 
 from gym import Env
@@ -101,6 +105,7 @@ class SUMOEnv(Env):
 
             # collecting the number of vehicles and occupancy right in front (or even in) of the merge area
             # choose max occupancy of a few sensors            
+        # Vehicle time sum and emissions are crucial metrics as they directly relate to the efficiency of traffic flow and the environmental impact of the traffic system. Lower vehicle times and emissions indicate a more efficient and environmentally friendly traffic management system, which are key objectives for the reinforcement learning model to achieve.
             occ_max = 0
             for loops in loops_before:
                 occ_loop = sum([traci.inductionloop.getLastStepOccupancy(loop) for loop in loops]) / len(loops)
@@ -121,6 +126,7 @@ class SUMOEnv(Env):
                 speeds = np.array(speeds)
                 lane_avg = np.mean(speeds)
                 lane_stdv = np.std(speeds)
+        # Aggregating metrics over a defined time period allows for a more stable and representative measurement of the traffic conditions and environmental impact. This approach smooths out the variability in individual measurements, providing a clearer picture of the overall system performance for the reinforcement learning model to learn from.
                 cvs_sum += lane_stdv / lane_avg
             cvs_seg = cvs_sum / len(seg)
             if np.isnan(cvs_seg):
@@ -128,6 +134,7 @@ class SUMOEnv(Env):
             self.cvs_seg_time[i].append(cvs_seg)
 
         # collected metrics are devided by the aggregation time to get the average values
+        # Choosing the maximum occupancy from sensors before the merge area is significant as it reflects the highest level of congestion that vehicles experience approaching the merge. This metric helps the reinforcement learning model to prioritize actions that alleviate congestion at critical points, improving overall traffic flow.
         # OVERALL
         mean_edge_speed = mean_edge_speed / self.aggregation_time # first is acutally a sum
         mean_road_speed = sum(mean_edge_speed) / len(mean_edge_speed)
