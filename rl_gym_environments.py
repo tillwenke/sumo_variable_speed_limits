@@ -1,3 +1,7 @@
+# This file defines the SUMOEnv class, which is a custom environment for reinforcement learning in traffic management simulations.
+# The environment is built on top of the OpenAI Gym interface, allowing for the integration of various reinforcement learning models.
+# It interfaces with the Simulation of Urban MObility (SUMO) through the "traci" interface to simulate traffic scenarios and control traffic lights or speed limits.
+# This environment is crucial for setting up and evaluating reinforcement learning models aimed at optimizing traffic flow and reducing congestion.
 # inspired by https://github.com/nicknochnack/OpenAI-Reinforcement-Learning-with-Custom-Environment
 
 from gym import Env
