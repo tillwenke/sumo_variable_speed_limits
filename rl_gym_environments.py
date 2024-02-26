@@ -1,10 +1,15 @@
 # inspired by https://github.com/nicknochnack/OpenAI-Reinforcement-Learning-with-Custom-Environment
 
+# Inspired by OpenAI Gym for constructing a custom environment.
 from gym import Env
 from gym.spaces import Discrete, Box
+# Utilized for numerical operations and array manipulations.
 import numpy as np
+# Used for statistical calculations like averaging.
 from statistics import mean
+# Allows interaction with the SUMO traffic simulator for real-time data manipulation.
 import traci
+# For creating and displaying plots and graphs to visualize data.
 from matplotlib import pyplot as plt
 
 from rl_utilities.reward_functions import *
