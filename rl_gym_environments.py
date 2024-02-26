@@ -1,15 +1,10 @@
 # inspired by https://github.com/nicknochnack/OpenAI-Reinforcement-Learning-with-Custom-Environment
 
-# Inspired by OpenAI Gym for constructing a custom environment.
 from gym import Env
 from gym.spaces import Discrete, Box
-# Utilized for numerical operations and array manipulations.
 import numpy as np
-# Used for statistical calculations like averaging.
 from statistics import mean
-# Allows interaction with the SUMO traffic simulator for real-time data manipulation.
 import traci
-# For creating and displaying plots and graphs to visualize data.
 from matplotlib import pyplot as plt
 
 from rl_utilities.reward_functions import *
@@ -35,9 +30,7 @@ class SUMOEnv(Env):
 
         #self.reward_func = scipy.stats.norm(105, 7.5).pdf
         self.reward_func = quad_occ_reward
-# This file defines custom Gym environments for reinforcement learning models to interact with simulated traffic scenarios using SUMO.
-# These environments simulate various traffic conditions and evaluate the performance of different traffic management strategies implemented by reinforcement learning agents.
-# The goal is to optimize traffic flow, reduce congestion, and minimize environmental impact through intelligent traffic management.
+
         self.mean_speeds = []
         self.flows = []
 
@@ -69,8 +62,7 @@ class SUMOEnv(Env):
         # Reduce simulation length by 1 second
         self.sim_length -= 1 
         
-        # Calculate reward based on the current state, which is influenced by the vehicle's occupancy and speed.
-        # This function evaluates how well the current state aligns with the desired state, guiding the agent's learning.
+        # Calculate reward
         reward = self.reward_func(self.state)
         
         # Check if shower is done
@@ -129,19 +121,6 @@ class SUMOEnv(Env):
                 speeds = np.array(speeds)
                 lane_avg = np.mean(speeds)
                 lane_stdv = np.std(speeds)
-        # The mean_edge_speed array is initialized to track the average speed of vehicles on each edge of the road network.
-        # This metric is crucial for understanding traffic flow and congestion levels.
-        
-        # Vehicle time sum and occupancy sum are accumulators for calculating traffic flow and occupancy, respectively.
-        # These metrics are essential for assessing the efficiency of traffic management strategies.
-        
-        # Looping through the aggregation time allows for the collection of traffic data over a specified interval.
-        # This approach helps in smoothing out the variability in traffic metrics, providing a more stable state representation.
-        
-        # Emissions are tracked to assess the environmental impact of traffic. Lower emissions indicate more efficient traffic flow.
-        
-        # The maximum occupancy in front of the merge area is determined by averaging the occupancy across several sensors.
-        # This metric helps in understanding the density of traffic approaching the merge, which is critical for managing congestion.
                 cvs_sum += lane_stdv / lane_avg
             cvs_seg = cvs_sum / len(seg)
             if np.isnan(cvs_seg):
@@ -166,19 +145,6 @@ class SUMOEnv(Env):
         # normalize the speed
         self.state = occupancy
         self.state_speed = mean_road_speed * 3.6  # m/s to km/h
-        # The CVS (Coefficient of Variation of Speed) is calculated for each road segment to monitor traffic safety.
-        # A higher CVS indicates greater variability in speed, which can be a sign of unsafe driving conditions.
-        
-        # Aggregating metrics over time provides average values that offer a clearer picture of traffic conditions.
-        # This approach reduces the impact of transient spikes in data, leading to more reliable state representations and reward calculations.
-        
-        # The mean road speed is calculated as an average of the mean speeds across all edges, providing a comprehensive view of traffic flow.
-        # This metric is crucial for the reinforcement learning model to understand the overall efficiency of the traffic network.
-        
-        # Traffic flow after the merge is calculated to assess the effectiveness of traffic management strategies in that area.
-        # High flow rates indicate smooth traffic movement, while low rates may suggest congestion or inefficiencies.
-        
-        # The occupancy metric provides insight into the level of road usage, which is essential for congestion management and traffic optimization.
 
         # Set placeholder for info
         info = {}
@@ -206,5 +172,3 @@ class SUMOEnv(Env):
 
         return self.state
     
-        # Normalizing the mean road speed from m/s to km/h makes the speed representation more intuitive and comparable to real-world scenarios.
-        # This normalization is crucial for the learning process as it ensures that the speed values are within a range that the model can effectively interpret and act upon.
