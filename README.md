@@ -19,7 +19,7 @@ A try to solve the congestion problem with reinforcement learning can be found i
 
 # Investigation outcomes via metrics
 
-Unfortunatelly no algorithm convincingly resolved the congestion so eye-test cannot be used to assess their achievements. Run algorithmns store their metrics in *metrics/* - most importantly the mean speed of cars over the whole stretch of the road. To combine the metrics of differnet approaches visually run *metrics/combine.py*.
+Unfortunatelly no algorithm convincingly resolved the congestion so eye-test cannot be used to assess their achievements. Run algorithmns store their metrics in *metrics/* - most importantly the mean speed of cars over the whole stretch of the road. To combine the metrics of different approaches visually run *metrics/combine.py*.
 
 ## Credits
 
