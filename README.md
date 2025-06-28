@@ -1,7 +1,7 @@
 # SUMO Traffic Simulation
 
 Project repository for Intelligent Transportation Systems course in Fall 2022 at University of Tartu.
-You can find a 3 to 2 lane merge scenario on a highway and differnent approaches to resolve emerging congestions including *reinforcment learning* and classical *rule-based* approaches.
+Here you can find a 3 to 2 lane merge scenario on a highway and different approaches to resolve emerging congestions including *reinforcment learning* and classical *rule-based* approaches.
 In order to learn about our outcome you can read `ITS_Report-VSL.pdf`.
 
 # Getting started
